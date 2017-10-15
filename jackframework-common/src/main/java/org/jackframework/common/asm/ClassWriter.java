@@ -1,4 +1,4 @@
-/***
+/**
  * ASM: a very small and fast Java bytecode manipulation framework
  * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
@@ -653,7 +653,6 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
      * Constructs a new {@link ClassWriter} object and enables optimizations for
      * "mostly add" bytecode transformations. These optimizations are the
      * following:
-     * <p>
      * <ul>
      * <li>The constant pool from the original class is copied as is in the new
      * class, which saves time. New constant pool entries will be added at the

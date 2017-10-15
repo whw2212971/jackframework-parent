@@ -1,4 +1,4 @@
-/***
+/**
  * ASM: a very small and fast Java bytecode manipulation framework
  * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
@@ -503,7 +503,6 @@ public abstract class MethodVisitor {
      * future versions of the Java Virtual Machine. To easily detect new
      * constant types, implementations of this method should check for
      * unexpected constant types, like this:
-     * <p>
      * <pre>
      * if (cst instanceof Integer) {
      *     // ...

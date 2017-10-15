@@ -1,4 +1,4 @@
-/***
+/**
  * ASM: a very small and fast Java bytecode manipulation framework
  * Copyright (c) 2000-2011 INRIA, France Telecom
  * All rights reserved.
@@ -106,14 +106,6 @@ public class Label {
      * visitSubroutine(!null, ...) call.
      */
     static final int VISITED2 = 2048;
-
-    /**
-     * Field used to associate user information to a label. Warning: this field
-     * is used by the ASM tree package. In order to use it with the ASM tree
-     * package you must override the
-     * {@link org.jackframework.common.asm.tree.MethodNode#getLabelNode} method.
-     */
-    public Object info;
 
     /**
      * Flags that indicate the status of this label.
