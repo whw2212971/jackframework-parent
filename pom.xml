@@ -10,6 +10,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <modules>
         <module>jackframework-common</module>
+        <module>jackframework-jdbc</module>
     </modules>
 
     <name>Jack Framework</name>
