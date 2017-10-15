@@ -1,6 +1,6 @@
 package org.jackframework.common.exceptions;
 
-import org.jackframework.common.tools.CaptainTools;
+import org.jackframework.common.CaptainTools;
 
 public class RunningException extends RuntimeException {
 

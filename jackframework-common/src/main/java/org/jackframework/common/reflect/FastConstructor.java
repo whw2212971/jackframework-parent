@@ -1,12 +1,13 @@
 package org.jackframework.common.reflect;
 
+import org.jackframework.common.CaptainTools;
 import org.jackframework.common.asm.ClassWriter;
 import org.jackframework.common.asm.MethodVisitor;
 import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.asm.Type;
-import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.common.exceptions.WrappedRunningException;
-import org.jackframework.common.tools.CaptainTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -14,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("unchecked")
 public abstract class FastConstructor<T> {
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(FastConstructor.class);
 
     protected static final Map<Constructor, FastConstructor> CACHE_MAP =
             new ConcurrentHashMap<Constructor, FastConstructor>();
@@ -45,7 +48,8 @@ public abstract class FastConstructor<T> {
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj instanceof FastConstructor &&
+        return obj != null &&
+                obj instanceof FastConstructor &&
                 constructor.equals(((FastConstructor) obj).constructor);
     }
 
@@ -67,7 +71,19 @@ public abstract class FastConstructor<T> {
 
     protected static <T> FastConstructor<T> createFastConstructor(Constructor<T> constructor) {
         if (!CaptainTools.isPublic(constructor)) {
-            throw new RunningException("The constructor must completely public: {}", constructor.toGenericString());
+            LOGGER.warn(
+                    "It's not a completely public constructor, implements with reflect: {}",
+                    constructor.toGenericString());
+            return new FastConstructor<T>(constructor) {
+                @Override
+                public T newInstance(Object... args) {
+                    try {
+                        return constructor.newInstance(args);
+                    } catch (Throwable e) {
+                        throw new WrappedRunningException(e);
+                    }
+                }
+            };
         }
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
@@ -88,6 +104,7 @@ public abstract class FastConstructor<T> {
         mv.visitVarInsn(Opcodes.ALOAD, 1);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassName, "<init>", constructorDesc, false);
         mv.visitInsn(Opcodes.RETURN);
+
         // }
         mv.visitMaxs(0, 0);
         mv.visitEnd();
@@ -102,7 +119,7 @@ public abstract class FastConstructor<T> {
         mv.visitTypeInsn(Opcodes.NEW, constructorClassName);
         mv.visitInsn(Opcodes.DUP);
 
-        CaptainTools.visitAsmArguments(mv, constructor.getParameterTypes(), 1);
+        AsmTools.visitArguments(mv, constructor.getParameterTypes(), 1);
 
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
                 constructorClassName, "<init>", Type.getConstructorDescriptor(constructor), false);
@@ -113,10 +130,9 @@ public abstract class FastConstructor<T> {
         mv.visitEnd();
 
         try {
-            return (FastConstructor<T>)
-                    CaptainTools.loadByteCodes(className, cw.toByteArray())
-                            .getConstructor(Constructor.class)
-                            .newInstance(constructor);
+            return (FastConstructor<T>) CaptainTools
+                    .loadByteCodes(className, cw.toByteArray())
+                    .getConstructor(Constructor.class).newInstance(constructor);
         } catch (Throwable e) {
             throw new WrappedRunningException(e);
         }

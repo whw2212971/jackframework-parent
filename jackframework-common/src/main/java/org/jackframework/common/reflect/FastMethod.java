@@ -1,12 +1,13 @@
 package org.jackframework.common.reflect;
 
+import org.jackframework.common.CaptainTools;
 import org.jackframework.common.asm.ClassWriter;
 import org.jackframework.common.asm.MethodVisitor;
 import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.asm.Type;
-import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.common.exceptions.WrappedRunningException;
-import org.jackframework.common.tools.CaptainTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -14,6 +15,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class FastMethod {
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(FastMethod.class);
 
     protected static final Map<Method, FastMethod> CACHE_MAP = new ConcurrentHashMap<Method, FastMethod>();
 
@@ -66,7 +69,19 @@ public abstract class FastMethod {
     @SuppressWarnings("unchecked")
     protected static FastMethod createFastMethod(Method method) {
         if (!CaptainTools.isPublic(method)) {
-            throw new RunningException("The method must be completely public method: {}", method.toGenericString());
+            LOGGER.warn(
+                    "It's not a completely public method, implements with reflect: {}",
+                    method.toGenericString());
+            return new FastMethod(method) {
+                @Override
+                public Object invoke(Object invoker, Object... args) {
+                    try {
+                        return method.invoke(invoker, args);
+                    } catch (Throwable e) {
+                        throw new WrappedRunningException(e);
+                    }
+                }
+            };
         }
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
@@ -86,6 +101,7 @@ public abstract class FastMethod {
         mv.visitVarInsn(Opcodes.ALOAD, 1);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassName, "<init>", constructorDesc, false);
         mv.visitInsn(Opcodes.RETURN);
+
         // }
         mv.visitMaxs(0, 0);
         mv.visitEnd();
@@ -108,7 +124,7 @@ public abstract class FastMethod {
             mv.visitTypeInsn(Opcodes.CHECKCAST, methodClassName);
         }
 
-        CaptainTools.visitAsmArguments(mv, method.getParameterTypes(), 2);
+        AsmTools.visitArguments(mv, method.getParameterTypes(), 2);
         mv.visitMethodInsn(isStatic ? Opcodes.INVOKESTATIC : Opcodes.INVOKEVIRTUAL,
                 methodClassName, method.getName(), Type.getMethodDescriptor(method), false);
 
@@ -119,7 +135,6 @@ public abstract class FastMethod {
         } else if (returnType.isPrimitive()) {
             Class<?> packingClass  = CaptainTools.getPackingClass(returnType);
             Method   packingMethod = CaptainTools.getPackingMethod(returnType);
-
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(packingClass),
                     packingMethod.getName(), Type.getMethodDescriptor(packingMethod), false);
         }
@@ -133,10 +148,9 @@ public abstract class FastMethod {
         cw.visitEnd();
 
         try {
-            return (FastMethod)
-                    CaptainTools.loadByteCodes(className, cw.toByteArray())
-                            .getConstructor(Method.class)
-                            .newInstance(method);
+            return (FastMethod) CaptainTools
+                    .loadByteCodes(className, cw.toByteArray())
+                    .getConstructor(Method.class).newInstance(method);
         } catch (Throwable e) {
             throw new WrappedRunningException(e);
         }

@@ -1,7 +1,5 @@
-package org.jackframework.common.tools;
+package org.jackframework.common;
 
-import org.jackframework.common.asm.MethodVisitor;
-import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.common.exceptions.WrappedRunningException;
 
@@ -14,7 +12,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class CaptainTools {
+public abstract class CaptainTools {
 
     public static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
@@ -103,39 +101,6 @@ public class CaptainTools {
         }
 
         return cbuf.closeThen().toString();
-    }
-
-    public static char[] mallocBuffer() {
-        return mallocBuffer(DEFAULT_THREAD_CHAR_BUFFER_SIZE);
-    }
-
-    public static char[] mallocBuffer(int minCapacity) {
-        SoftReference<char[]> ref = THREAD_CHAR_BUFFER_CACHE.get();
-        if (ref != null) {
-            char[] buffer = ref.get();
-            if (buffer != null && buffer.length >= minCapacity) {
-                THREAD_CHAR_BUFFER_CACHE.set(null);
-                return buffer;
-            }
-        }
-        return new char[minCapacity];
-    }
-
-    public static void recycleBuffer(char[] buffer) {
-        if (buffer.length <= MAX_THREAD_REFERENCE_CHAR_BUFFER_SIZE) {
-            SoftReference<char[]> oldCache = THREAD_CHAR_BUFFER_CACHE.get();
-            if (oldCache != null) {
-                char[] oldBuffer = oldCache.get();
-                if (oldBuffer != null && oldBuffer.length > buffer.length) {
-                    return;
-                }
-            }
-            THREAD_CHAR_BUFFER_CACHE.set(new SoftReference<char[]>(buffer));
-        }
-    }
-
-    public static long nextIncrement() {
-        return ATOMIC_LONG.incrementAndGet();
     }
 
     public static boolean isPublic(Method method) {
@@ -328,7 +293,6 @@ public class CaptainTools {
             GenericArrayType genericArrayType = (GenericArrayType) type;
             Type             componentType    = genericArrayType.getGenericComponentType();
             CharsWriter      cbuf             = new CharsWriter().append('[');
-
             while (componentType instanceof GenericArrayType) {
                 cbuf.write('[');
                 componentType = ((GenericArrayType) componentType).getGenericComponentType();
@@ -340,29 +304,7 @@ public class CaptainTools {
                 throw new WrappedRunningException(e);
             }
         }
-
-        throw new RunningException("Unknown type: {}.", type);
-    }
-
-    public static void visitAsmArguments(MethodVisitor mv, Class<?>[] paramTypes, int localIndex) {
-        for (int i = 0, j = paramTypes.length; i < j; i++) {
-            mv.visitVarInsn(Opcodes.ALOAD, localIndex);
-            mv.visitLdcInsn(i);
-            mv.visitInsn(Opcodes.AALOAD);
-
-            Class<?> parameterType = paramTypes[i];
-            if (parameterType.isPrimitive()) {
-                Class<?> packingClass     = getPackingClass(parameterType);
-                Method   unPackingMethod  = getUnpackingMethod(parameterType);
-                String   packingClassName = org.jackframework.common.asm.Type.getInternalName(packingClass);
-
-                mv.visitTypeInsn(Opcodes.CHECKCAST, packingClassName);
-                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, packingClassName, unPackingMethod.getName(),
-                        org.jackframework.common.asm.Type.getMethodDescriptor(unPackingMethod), false);
-            } else {
-                mv.visitTypeInsn(Opcodes.CHECKCAST, org.jackframework.common.asm.Type.getInternalName(parameterType));
-            }
-        }
+        throw new RunningException("Could not convert the type to class: {}.", type);
     }
 
     public static String toString(InputStream inputStream) {
@@ -424,6 +366,9 @@ public class CaptainTools {
     }
 
     public static void close(Closeable closeable) {
+        if (closeable == null) {
+            return;
+        }
         try {
             closeable.close();
         } catch (IOException e) {
@@ -482,6 +427,39 @@ public class CaptainTools {
             newCapacity = (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
         }
         return newCapacity;
+    }
+
+    public static long nextIncrement() {
+        return ATOMIC_LONG.incrementAndGet();
+    }
+
+    public static char[] mallocBuffer() {
+        return mallocBuffer(DEFAULT_THREAD_CHAR_BUFFER_SIZE);
+    }
+
+    public static char[] mallocBuffer(int minCapacity) {
+        SoftReference<char[]> ref = THREAD_CHAR_BUFFER_CACHE.get();
+        if (ref != null) {
+            char[] buffer = ref.get();
+            if (buffer != null && buffer.length >= minCapacity) {
+                THREAD_CHAR_BUFFER_CACHE.set(null);
+                return buffer;
+            }
+        }
+        return new char[minCapacity];
+    }
+
+    public static void recycleBuffer(char[] buffer) {
+        if (buffer.length <= MAX_THREAD_REFERENCE_CHAR_BUFFER_SIZE) {
+            SoftReference<char[]> oldCache = THREAD_CHAR_BUFFER_CACHE.get();
+            if (oldCache != null) {
+                char[] oldBuffer = oldCache.get();
+                if (oldBuffer != null && oldBuffer.length > buffer.length) {
+                    return;
+                }
+            }
+            THREAD_CHAR_BUFFER_CACHE.set(new SoftReference<char[]>(buffer));
+        }
     }
 
     public static int stringSize(int value) {
@@ -625,7 +603,7 @@ public class CaptainTools {
     }
 
     public static String loadResourceAsString(String classPath, Charset charset) {
-        InputStream in = ClassTools.INSTANCE.getResourceAsStream(classPath);
+        InputStream in = loadResourceAsStream(classPath);
         if (in == null) {
             return null;
         }
@@ -642,12 +620,20 @@ public class CaptainTools {
         return ClassTools.INSTANCE.getResourceAsStream(classPath);
     }
 
-    public static Class loadByteCodes(String name, byte[] b) {
-        return loadByteCodes(name, b, 0, b.length);
+    public static Class loadByteCodes(String name, byte[] bytes) {
+        return loadByteCodes(name, bytes, 0, bytes.length);
     }
 
-    public static Class loadByteCodes(String name, byte[] b, int off, int len) {
-        return ClassTools.loadByteCodes(name, b, off, len);
+    public static Class loadByteCodes(String className, byte[] bytes, int off, int len) {
+        return ClassTools.loadByteCodes(className, bytes, off, len);
+    }
+
+    public static ClassLoader getClassLoader() {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader == null) {
+            classLoader = CaptainTools.class.getClassLoader();
+        }
+        return classLoader;
     }
 
     public static class ClassTools extends ClassLoader {
@@ -655,11 +641,11 @@ public class CaptainTools {
         public static final ClassTools INSTANCE = new ClassTools();
 
         protected ClassTools() {
-            super(ClassTools.class.getClassLoader());
+            super(getClassLoader());
         }
 
-        public static Class loadByteCodes(String name, byte[] b, int off, int len) {
-            return INSTANCE.defineClass(name, b, off, len);
+        public static Class loadByteCodes(String className, byte[] bytes, int off, int len) {
+            return INSTANCE.defineClass(className, bytes, off, len);
         }
 
     }

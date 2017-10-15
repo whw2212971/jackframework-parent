@@ -1,4 +1,4 @@
-package org.jackframework.common.tools;
+package org.jackframework.common;
 
 import java.io.*;
 import java.nio.charset.Charset;
