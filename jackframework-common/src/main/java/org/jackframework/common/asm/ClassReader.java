@@ -1415,7 +1415,7 @@ public class ClassReader {
                     frame = null;
                 }
             }
-            // inserts a frame for this offset, if requested by setting
+            // dialect a frame for this offset, if requested by setting
             // insertFrame to true during the previous iteration. The actual
             // frame content will be computed in MethodWriter.
             if (insertFrame) {

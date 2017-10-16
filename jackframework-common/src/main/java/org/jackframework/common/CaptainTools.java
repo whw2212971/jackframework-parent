@@ -110,6 +110,11 @@ public abstract class CaptainTools {
                 isPublic(method.getParameterTypes());
     }
 
+    public static boolean isPublic(Field field) {
+        return Modifier.isPublic(field.getModifiers()) &&
+                Modifier.isPublic(field.getDeclaringClass().getModifiers());
+    }
+
     public static boolean isPublic(Constructor<?> constructor) {
         return Modifier.isPublic(constructor.getModifiers()) &&
                 Modifier.isPublic(constructor.getDeclaringClass().getModifiers()) &&
@@ -305,6 +310,31 @@ public abstract class CaptainTools {
             }
         }
         throw new RunningException("Could not convert the type to class: {}.", type);
+    }
+
+    public static boolean isEmpty(Object object) {
+        return object == null || object.toString().isEmpty();
+    }
+
+    public static boolean isNotEmpty(Object object) {
+        return !isEmpty(object);
+    }
+
+    public static boolean isBlank(Object object) {
+        if (object == null) {
+            return true;
+        }
+        String value = object.toString();
+        for (int i = 0, j = value.length(); i < j; i++) {
+            if (value.charAt(i) > ' ') {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isNotBlank(Object object) {
+        return !isBlank(object);
     }
 
     public static String toString(InputStream inputStream) {
