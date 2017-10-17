@@ -1,7 +1,6 @@
 package org.jackframework.jdbc.jdbc;
 
 import org.jackframework.common.CaptainTools;
-import org.jackframework.common.exceptions.WrappedRunningException;
 import org.jackframework.jdbc.core.CommonDaoConfig;
 import org.jackframework.jdbc.core.CommonDaoException;
 import org.jackframework.jdbc.orm.ClassTable;
@@ -94,7 +93,7 @@ public class DataAccessChannelFactory {
             }
             return table;
         } catch (Throwable e) {
-            throw new WrappedRunningException(e);
+            throw new CommonDaoException(e);
         } finally {
             JdbcUtils.closeQuietly(primaryKeySet);
             JdbcUtils.closeQuietly(columnSet);

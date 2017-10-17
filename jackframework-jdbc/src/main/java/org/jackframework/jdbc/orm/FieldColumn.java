@@ -46,7 +46,12 @@ public class FieldColumn {
     }
 
     public void setStatementValue(PreparedStatement statement, int index, Object target) throws SQLException {
-        statementSetter.setValue(statement, index, getValue(target));
+        Object value = getValue(target);
+        if (value == null) {
+            statement.setString(index, null);
+            return;
+        }
+        statementSetter.setValue(statement, index, value);
     }
 
     public Object getResultValue(ResultSet resultSet, int index) throws SQLException {

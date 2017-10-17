@@ -157,26 +157,4 @@ public class JdbcUtils {
         return resultGetter;
     }
 
-    public static int getFirstIntResult(ResultSet resultSet) throws SQLException {
-        try {
-            if (resultSet.next()) {
-                return resultSet.getInt(1);
-            }
-            throw new CommonDaoException("Empty result");
-        } finally {
-            closeQuietly(resultSet);
-        }
-    }
-
-    public static long getFirstLongResult(ResultSet resultSet) throws SQLException {
-        try {
-            if (resultSet.next()) {
-                return resultSet.getLong(1);
-            }
-            throw new CommonDaoException("Empty result");
-        } finally {
-            closeQuietly(resultSet);
-        }
-    }
-
 }
