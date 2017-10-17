@@ -100,7 +100,7 @@ public abstract class CaptainTools {
             cbuf.appendSubstring(message, prev, length);
         }
 
-        return cbuf.closeThen().toString();
+        return cbuf.closeToString();
     }
 
     public static boolean isPublic(Method method) {
@@ -304,7 +304,7 @@ public abstract class CaptainTools {
             }
             try {
                 return Class.forName(cbuf.append('L')
-                        .append(getTypeClass(componentType).getName()).append(';').closeThen().toString());
+                        .append(getTypeClass(componentType).getName()).append(';').closeToString());
             } catch (ClassNotFoundException e) {
                 throw new WrappedRunningException(e);
             }

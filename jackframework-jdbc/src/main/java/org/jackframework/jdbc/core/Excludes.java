@@ -14,8 +14,7 @@ public class Excludes {
     }
 
     public boolean contains(FieldColumn fieldColumn) {
-        return fieldNames.contains(fieldColumn.getColumn().getColumnName()) ||
-                fieldNames.contains(fieldColumn.getField().getName());
+        return fieldNames.contains(fieldColumn.getColumnName()) || fieldNames.contains(fieldColumn.getFieldName());
     }
 
     public String toExcludesString() {

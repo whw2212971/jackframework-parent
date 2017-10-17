@@ -1,8 +1,8 @@
 package org.jackframework.jdbc.orm;
 
-import org.jackframework.common.CaptainTools;
 import org.jackframework.common.reflect.FastMethod;
 import org.jackframework.jdbc.core.CommonDaoException;
+import org.jackframework.jdbc.jdbc.JdbcUtils;
 import org.jackframework.jdbc.jdbc.ResultGetter;
 import org.jackframework.jdbc.jdbc.StatementSetter;
 
@@ -21,22 +21,20 @@ public class FieldColumn {
     protected StatementSetter statementSetter;
     protected ResultGetter    resultGetter;
 
-    public FieldColumn(Column column, Field field) {
-        this.column = column;
-        this.field = field;
+    public FieldColumn(Column column, Field field, Method getterMethod, Method setterMethod) {
+        try {
+            this.column = column;
+            this.field = field;
 
-        Method getterMethod = CaptainTools.findGetter(field);
-        if (getterMethod == null) {
-            throw new CommonDaoException("Could not found the getter: {}", field.toGenericString());
+            this.getter = FastMethod.getFastMethod(getterMethod);
+            this.setter = FastMethod.getFastMethod(setterMethod);
+
+            Class<?> fieldType = field.getType();
+            this.statementSetter = JdbcUtils.getStatementSetter(fieldType);
+            this.resultGetter = JdbcUtils.getResultGetter(fieldType);
+        } catch (Throwable e) {
+            throw new CommonDaoException(e, "Cause of the field: {}", field.toGenericString());
         }
-
-        Method setterMethod = CaptainTools.findGetter(field);
-        if (setterMethod == null) {
-            throw new CommonDaoException("Could not found the setter: {}", field.toGenericString());
-        }
-
-        this.getter = FastMethod.getFastMethod(getterMethod);
-        this.setter = FastMethod.getFastMethod(setterMethod);
     }
 
     public void setValue(Object target, Object value) {
@@ -51,12 +49,20 @@ public class FieldColumn {
         statementSetter.setValue(statement, index, getValue(target));
     }
 
-    public Object getResultValue(ResultSet resultSet, int index) {
+    public Object getResultValue(ResultSet resultSet, int index) throws SQLException {
         return resultGetter.getResultValue(resultSet, index);
     }
 
-    public void setResultValue(ResultSet resultSet, int index, Object target) {
-        setValue(target, getResultValue(resultSet, index));
+    public void setResultValue(ResultSet resultSet, int index, Object target) throws SQLException {
+        resultGetter.setResultValue(resultSet, index, setter, target);
+    }
+
+    public String getColumnName() {
+        return getColumn().getColumnName();
+    }
+
+    public String getFieldName() {
+        return getField().getName();
     }
 
     public Column getColumn() {

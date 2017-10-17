@@ -16,8 +16,8 @@ public class Includes {
     }
 
     public boolean contains(FieldColumn fieldColumn) {
-        return fieldNames.contains(fieldColumn.getColumn().getColumnName()) ||
-                fieldNames.contains(fieldColumn.getField().getName());
+        return fieldNames.contains(fieldColumn.getColumnName()) ||
+                fieldNames.contains(fieldColumn.getFieldName());
     }
 
     public String toIncludesString() {
@@ -44,7 +44,7 @@ public class Includes {
                 cbuf.append(iterator.next());
             }
         }
-        return cbuf.closeThen().toString();
+        return cbuf.closeToString();
     }
 
 }

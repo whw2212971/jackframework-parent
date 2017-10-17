@@ -273,6 +273,10 @@ public class CharsWriter extends Writer {
         return new String(buffer, 0, size);
     }
 
+    public String closeToString() {
+        return closeThen().toString();
+    }
+
     @Override
     public void flush() throws IOException {
         // Do nothing.
@@ -283,6 +287,11 @@ public class CharsWriter extends Writer {
         CaptainTools.recycleBuffer(buffer);
     }
 
+    public CharsWriter closeThen() {
+        close();
+        return this;
+    }
+
     public CharsWriter resetThen() {
         reset();
         return this;
@@ -290,11 +299,6 @@ public class CharsWriter extends Writer {
 
     public CharsWriter setSizeThen(int size) {
         setSize(size);
-        return this;
-    }
-
-    public CharsWriter closeThen() {
-        close();
         return this;
     }
 

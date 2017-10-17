@@ -1,20 +1,19 @@
 package org.jackframework.jdbc.core;
 
 import org.jackframework.common.CaptainTools;
-import org.jackframework.jdbc.parts.DataAccessChannel;
-import org.jackframework.jdbc.parts.DataAccessChannelFactory;
-import org.jackframework.jdbc.parts.ResultHandler;
-import org.jackframework.jdbc.parts.ResultHandlerFactory;
+import org.jackframework.jdbc.jdbc.DataAccessChannel;
+import org.jackframework.jdbc.jdbc.DataAccessChannelFactory;
+import org.jackframework.jdbc.jdbc.ResultHandlers;
 
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class CommonDao {
 
     protected static final Set<String> NULL_STRING_SET = new HashSet<String>();
 
+    protected CommonDaoConfig          commonDaoConfig;
     protected DataAccessChannelFactory dataAccessChannelFactory;
-
-    protected ResultHandlerFactory resultHandlerFactory;
 
     public <T> void insert(T dataObject) {
         if (dataObject == null) {
@@ -106,7 +105,8 @@ public class CommonDao {
         if (id == null) {
             return null;
         }
-        return getDataAccessChannel(dataType).findById(id, getUniqueHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (T) dataAccessChannel.findById(id, dataAccessChannel.getUniqueResultHandler());
     }
 
     public <T> T findOne(Class<T> dataType, Object id, Includes includes) {
@@ -114,7 +114,8 @@ public class CommonDao {
         if (id == null) {
             return null;
         }
-        return getDataAccessChannel(dataType).findById(id, includes, getUniqueHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (T) dataAccessChannel.findById(id, includes, dataAccessChannel.getUniqueResultHandler());
     }
 
     public <T> T findOne(Class<T> dataType, Object id, Excludes excludes) {
@@ -122,7 +123,8 @@ public class CommonDao {
         if (id == null) {
             return null;
         }
-        return getDataAccessChannel(dataType).findById(id, excludes, getUniqueHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (T) dataAccessChannel.findById(id, excludes, dataAccessChannel.getUniqueResultHandler());
     }
 
     public <T> T findOne(Class<T> dataType, String whereClause, Object... statementArgs) {
@@ -130,7 +132,9 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(whereClause, statementArgs, getUniqueHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (T) dataAccessChannel.findByWhere(
+                whereClause, statementArgs, dataAccessChannel.getUniqueResultHandler());
     }
 
     public <T> T findOne(Class<T> dataType, Includes includes, String whereClause, Object... statementArgs) {
@@ -138,8 +142,9 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(
-                includes, whereClause, statementArgs, getUniqueHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (T) dataAccessChannel.findByWhere(
+                includes, whereClause, statementArgs, dataAccessChannel.getUniqueResultHandler());
     }
 
     public <T> T findOne(Class<T> dataType, Excludes excludes, String whereClause, Object... statementArgs) {
@@ -147,29 +152,30 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(
-                excludes, whereClause, statementArgs, getUniqueHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (T) dataAccessChannel.findByWhere(
+                excludes, whereClause, statementArgs, dataAccessChannel.getUniqueResultHandler());
     }
 
-    public <T> T findField(Class<?> dataType, String fieldName, Class<T> resultType, Object id) {
+    public <T> T findField(Class<?> dataType, String fieldName, Object id) {
         checkDataTypeParam(dataType);
         checkFieldNameParam(fieldName);
-        checkResultTypeParam(resultType);
         if (id == null) {
             return null;
         }
-        return getDataAccessChannel(dataType).findFieldById(fieldName, resultType, id);
+        return getDataAccessChannel(dataType)
+                .findById(id, Includes.include(fieldName), ResultHandlers.<T>getFieldHandler());
     }
 
     public <T> T findField(
-            Class<?> dataType, String fieldName, Class<T> resultType, String whereClause, Object... statementArgs) {
+            Class<?> dataType, String fieldName, String whereClause, Object... statementArgs) {
         checkDataTypeParam(dataType);
         checkFieldNameParam(fieldName);
-        checkResultTypeParam(resultType);
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findFieldByWhere(fieldName, resultType, whereClause, statementArgs);
+        return getDataAccessChannel(dataType).findByWhere(
+                Includes.include(fieldName), whereClause, statementArgs, ResultHandlers.<T>getFieldHandler());
     }
 
     public Map<String, Object> findMap(Class<?> dataType, Object id) {
@@ -177,7 +183,7 @@ public class CommonDao {
         if (id == null) {
             return null;
         }
-        return getDataAccessChannel(dataType).findById(id, getMapHandler());
+        return getDataAccessChannel(dataType).findById(id, ResultHandlers.MAP_RESULT_HANDLER);
     }
 
     public Map<String, Object> findMap(Class<?> dataType, Object id, Includes includes) {
@@ -185,7 +191,7 @@ public class CommonDao {
         if (id == null) {
             return null;
         }
-        return getDataAccessChannel(dataType).findById(id, includes, getMapHandler());
+        return getDataAccessChannel(dataType).findById(id, includes, ResultHandlers.MAP_RESULT_HANDLER);
     }
 
     public Map<String, Object> findMap(Class<?> dataType, Object id, Excludes excludes) {
@@ -193,7 +199,7 @@ public class CommonDao {
         if (id == null) {
             return null;
         }
-        return getDataAccessChannel(dataType).findById(id, excludes, getMapHandler());
+        return getDataAccessChannel(dataType).findById(id, excludes, ResultHandlers.MAP_RESULT_HANDLER);
     }
 
     public Map<String, Object> findMap(Class<?> dataType, String whereClause, Object... statementArgs) {
@@ -201,7 +207,8 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(whereClause, statementArgs, getMapHandler());
+        return getDataAccessChannel(dataType)
+                .findByWhere(whereClause, statementArgs, ResultHandlers.MAP_RESULT_HANDLER);
     }
 
     public Map<String, Object> findMap(
@@ -210,7 +217,8 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(includes, whereClause, statementArgs, getMapHandler());
+        return getDataAccessChannel(dataType)
+                .findByWhere(includes, whereClause, statementArgs, ResultHandlers.MAP_RESULT_HANDLER);
     }
 
     public Map<String, Object> findMap(
@@ -219,7 +227,8 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(excludes, whereClause, statementArgs, getMapHandler());
+        return getDataAccessChannel(dataType)
+                .findByWhere(excludes, whereClause, statementArgs, ResultHandlers.MAP_RESULT_HANDLER);
     }
 
     public <T> List<T> findList(Class<T> dataType, String whereClause, Object... statementArgs) {
@@ -227,7 +236,9 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(whereClause, statementArgs, getListHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (List<T>) dataAccessChannel.findByWhere(
+                whereClause, statementArgs, dataAccessChannel.getListResultHandler());
     }
 
     public <T> List<T> findList(Class<T> dataType, Includes includes, String whereClause, Object... statementArgs) {
@@ -235,8 +246,9 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(
-                includes, whereClause, statementArgs, getListHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (List<T>) dataAccessChannel.findByWhere(
+                includes, whereClause, statementArgs, dataAccessChannel.getListResultHandler());
     }
 
     public <T> List<T> findList(Class<T> dataType, Excludes excludes, String whereClause, Object... statementArgs) {
@@ -244,8 +256,9 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(
-                excludes, whereClause, statementArgs, getListHandler(dataType));
+        DataAccessChannel dataAccessChannel = getDataAccessChannel(dataType);
+        return (List<T>) dataAccessChannel.findByWhere(
+                excludes, whereClause, statementArgs, dataAccessChannel.getListResultHandler());
     }
 
     public List<Map<String, Object>> findMapList(Class<?> dataType, String whereClause, Object... statementArgs) {
@@ -253,7 +266,8 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(whereClause, statementArgs, getMapListHandler());
+        return getDataAccessChannel(dataType)
+                .findByWhere(whereClause, statementArgs, ResultHandlers.MAP_LIST_RESULT_HANDLER);
     }
 
     public List<Map<String, Object>> findMapList(
@@ -262,7 +276,8 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(includes, whereClause, statementArgs, getMapListHandler());
+        return getDataAccessChannel(dataType)
+                .findByWhere(includes, whereClause, statementArgs, ResultHandlers.MAP_LIST_RESULT_HANDLER);
     }
 
     public List<Map<String, Object>> findMapList(
@@ -271,27 +286,28 @@ public class CommonDao {
         if (CaptainTools.isBlank(whereClause)) {
             return null;
         }
-        return getDataAccessChannel(dataType).findByWhere(excludes, whereClause, statementArgs, getMapListHandler());
+        return getDataAccessChannel(dataType)
+                .findByWhere(excludes, whereClause, statementArgs, ResultHandlers.MAP_LIST_RESULT_HANDLER);
     }
 
-    protected DataAccessChannel getDataAccessChannel(Class<?> dataType) {
+
+    public DataAccessChannel getDataAccessChannel(Class<?> dataType) {
         return dataAccessChannelFactory.getDataAccessChannel(dataType);
     }
 
-    protected <T> ResultHandler<T> getUniqueHandler(Class<T> resultType) {
-        return resultHandlerFactory.getUniqueHandler(resultType);
+    public CommonDaoConfig getCommonDaoConfig() {
+        return commonDaoConfig;
     }
 
-    protected <T> ResultHandler<List<T>> getListHandler(Class<T> resultType) {
-        return resultHandlerFactory.getListHandler(resultType);
+    public void setCommonDaoConfig(CommonDaoConfig commonDaoConfig) {
+        this.commonDaoConfig = commonDaoConfig;
     }
 
-    protected ResultHandler<Map<String, Object>> getMapHandler() {
-        return resultHandlerFactory.getMapHandler();
-    }
-
-    protected ResultHandler<List<Map<String, Object>>> getMapListHandler() {
-        return resultHandlerFactory.getMapListHandler();
+    public void init() {
+        if (commonDaoConfig == null) {
+            throw new CommonDaoException("The property 'commonDaoConfig' is required.");
+        }
+        dataAccessChannelFactory = new DataAccessChannelFactory(commonDaoConfig);
     }
 
     protected Map<Class<?>, List<Object>> groupDataObjects(Object[] dataObjects) {
@@ -333,12 +349,6 @@ public class CommonDao {
     protected static void checkFieldNameParam(String fieldName) {
         if (CaptainTools.isBlank(fieldName)) {
             throw new CommonDaoException("Parameter 'fieldName' is required.");
-        }
-    }
-
-    protected static void checkResultTypeParam(Class<?> resultType) {
-        if (CaptainTools.isBlank(resultType)) {
-            throw new CommonDaoException("Parameter 'resultType' is required.");
         }
     }
 
