@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-public abstract class JdbcContext {
+public abstract class ExecuteContext {
 
     protected String sql;
 

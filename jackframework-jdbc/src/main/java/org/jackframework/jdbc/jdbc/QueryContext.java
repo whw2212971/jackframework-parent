@@ -5,7 +5,7 @@ import org.jackframework.jdbc.orm.FieldColumn;
 import java.sql.ResultSet;
 import java.util.List;
 
-public class QueryContext<T> extends JdbcContext {
+public class QueryContext<T> extends ExecuteContext {
 
     protected ResultSet resultSet;
 
