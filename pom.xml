@@ -12,6 +12,7 @@
     <modules>
         <module>jackframework-common</module>
         <module>jackframework-jdbc</module>
+        <module>jackframework-front</module>
     </modules>
 
     <name>Jack Framework</name>

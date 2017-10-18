@@ -1,0 +1,97 @@
+@charset "UTF-8";
+@import "base";
+
+/***********************************************************************************
+   Reset
+ **********************************************************************************/
+* {
+  @include box-sizing(border-box);
+  outline: 0;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-family-sans-serif;
+  font-size: $font-size-base;
+  color: $color-base;
+}
+
+/***********************************************************************************
+   Icon
+ **********************************************************************************/
+@font-face {
+  font-family: 'JackIcon';
+  src: url("../font/jackicon.eot");
+  src: url("../font/jackicon.eot?#iefix") format("embedded-opentype"), url("../font/jackicon.ttf") format("truetype");
+}
+
+%icon {
+  font-family: 'JackIcon', serif;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/***********************************************************************************
+   Form
+ **********************************************************************************/
+%form-control {
+  color: $color-base;
+  display: block;
+  width: 100%;
+  height: $input-height-base;
+  font-size: $font-size-base;
+  line-height: $line-height-proportion;
+  border: 1px solid $black4;
+  border-radius: $border-radius-base;
+  padding: $padding-base-vertical $padding-base-horizontal;
+  @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075));
+  @include transition(border-color ease-in-out .15s, box-shadow ease-in-out .15s);
+}
+
+%form-control-focus {
+  $color: $color-input-focus;
+  border-color: $color;
+  @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(red($color), green($color), blue($color), .6));
+}
+
+.form-control {
+  @extend %form-control;
+  @include placeholder;
+  &:focus {
+    @extend %form-control-focus;
+  }
+}
+
+.form-select {
+  @extend %form-control;
+  position: relative;
+  &:before {
+    @extend %icon;
+    content: '\E000';
+    float: right;
+  }
+  &:after {
+    @extend %ellipses;
+    @include simulate-placeholder;
+    display: block;
+    margin-right: 10px;
+    content: attr(data-placeholder);
+  }
+  &.focus {
+    @extend %form-control-focus;
+    &:before {
+      content: '\E001';
+      color: $color-input-focus;
+    }
+  }
+  &.selected:after {
+    color: $color-base;
+    content: attr(data-placeholder);
+  }
+  & > select {
+    cursor: pointer;
+    @extend %hidden-cover;
+  }
+}

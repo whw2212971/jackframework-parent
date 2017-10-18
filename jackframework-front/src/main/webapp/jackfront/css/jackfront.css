@@ -1,0 +1,113 @@
+.form-select:after {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.form-select > select {
+  opacity: 0;
+  filter: alpha(opacity=0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+
+/***********************************************************************************
+   Reset
+ **********************************************************************************/
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: #666;
+}
+
+/***********************************************************************************
+   Icon
+ **********************************************************************************/
+@font-face {
+  font-family: 'JackIcon';
+  src: url("../font/jackicon.eot");
+  src: url("../font/jackicon.eot?#iefix") format("embedded-opentype"), url("../font/jackicon.ttf") format("truetype");
+}
+.form-select:before {
+  font-family: 'JackIcon', serif;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/***********************************************************************************
+   Form
+ **********************************************************************************/
+.form-control, .form-select {
+  color: #666;
+  display: block;
+  width: 100%;
+  height: 34px;
+  font-size: 14px;
+  line-height: 1.4285714286;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 12px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.form-control:focus, .form-select.focus {
+  border-color: #66afe9;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+.form-control::-moz-placeholder {
+  color: #ccc;
+  opacity: 1;
+}
+.form-control:-ms-input-placeholder {
+  color: #ccc;
+}
+.form-control::-webkit-input-placeholder {
+  color: #ccc;
+}
+
+.form-select {
+  position: relative;
+}
+.form-select:before {
+  content: '\E000';
+  float: right;
+}
+.form-select:after {
+  color: #ccc;
+  display: block;
+  margin-right: 10px;
+  content: attr(data-placeholder);
+}
+.form-select.focus:before {
+  content: '\E001';
+  color: #66afe9;
+}
+.form-select.selected:after {
+  color: #666;
+  content: attr(data-placeholder);
+}
+.form-select > select {
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=jackfront.css.map */
