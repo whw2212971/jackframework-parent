@@ -8,12 +8,12 @@
         var $root = $(rootElement);
 
         $root.find('.form-select>select').each(function () {
-            var $self = $(this);
-            var $parent = $self.parent();
-            var placeholder = $parent.attr('data-placeholder') || $self.prop('title') || '';
-            $self.on('change', function () {
-                var $option = $self.find('option:selected');
-                if ($option.length === 0 || $self.val() === '') {
+            var $select = $(this);
+            var $parent = $select.parent();
+            var placeholder = $parent.attr('data-placeholder') || $select.prop('title') || '';
+            $select.on('change', function () {
+                var $option = $select.find('option:selected');
+                if ($option.length === 0 || $select.val() === '') {
                     $parent.attr('data-placeholder', placeholder).removeClass('selected');
                 } else {
                     $parent.attr('data-placeholder', $option.text()).addClass('selected');

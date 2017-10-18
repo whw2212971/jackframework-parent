@@ -4,8 +4,11 @@
 /***********************************************************************************
    Reset
  **********************************************************************************/
-* {
+*, *:before, *:after {
   @include box-sizing(border-box);
+}
+
+* {
   outline: 0;
   margin: 0;
   padding: 0;
@@ -179,6 +182,26 @@ textarea.form-control {
 /***********************************************************************************
    布局系统
  **********************************************************************************/
-.padding-sm {
+.row {
+  margin: 0 (-$margin-base-layout);
+  &:before, &:after {
+    content: ' ';
+    display: block;
+    clear: both;
+  }
+}
 
+.col {
+  float: left;
+  padding: $margin-base-layout;
+}
+
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    @extend .col;
+    width: 100% / 12 * $i;
+  }
+  .col-offset-#{$i} {
+    margin-left: 100% / 12 * $i;
+  }
 }

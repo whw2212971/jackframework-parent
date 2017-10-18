@@ -57,6 +57,7 @@
                 <li><a href="#Textarea">文本框</a></li>
                 <li><a href="#Select">下拉框</a></li>
                 <li><a href="#Select">按钮</a></li>
+                <li><a href="#Layout">布局系统</a></li>
             </ul>
         </li>
     </ul>
@@ -135,6 +136,52 @@
         <div class="chunk">
             <label>禁用</label>
             <button disabled class="btn">按钮</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1 id="Layout">布局系统（十二格子）</h1>
+        <hr/>
+        <div class="row">
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+            <div class="col-1">col-1</div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <input class="form-control" placeholder="col-3"/>
+            </div>
+            <div class="col-6">
+                <input class="form-control" placeholder="col-6"/>
+            </div>
+            <div class="col-3">
+                <input class="form-control" placeholder="col-3"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <input class="form-control" placeholder="col-3"/>
+            </div>
+            <div class="col-5 col-offset-4">
+                <input class="form-control" placeholder="col-5 col-offset-4"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" style="width:41%">
+                <input class="form-control" placeholder="width:41%"/>
+            </div>
+            <div class="col" style="width:59%">
+                <input class="form-control" placeholder="width:59%"/>
+            </div>
         </div>
     </div>
 
