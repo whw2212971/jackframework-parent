@@ -17,6 +17,12 @@ body {
   color: $color-base;
 }
 
+input, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
 /***********************************************************************************
    Icon
  **********************************************************************************/
@@ -36,16 +42,20 @@ body {
 /***********************************************************************************
    Form
  **********************************************************************************/
-%form-control {
+%control {
   color: $color-base;
   display: block;
-  width: 100%;
   height: $input-height-base;
   font-size: $font-size-base;
   line-height: $line-height-proportion;
-  border: 1px solid $black4;
+  border: 1px solid $color-black4;
   border-radius: $border-radius-base;
   padding: $padding-base-vertical $padding-base-horizontal;
+}
+
+%form-control {
+  @extend %control;
+  width: 100%;
   @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075));
   @include transition(border-color ease-in-out .15s, box-shadow ease-in-out .15s);
 }
@@ -56,12 +66,32 @@ body {
   @include box-shadow(inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(red($color), green($color), blue($color), .6));
 }
 
+%form-control-readonly {
+  background-color: $color-black5;
+  opacity: 1;
+}
+
+%form-control-disabled {
+  @extend %form-control-readonly;
+  cursor: not-allowed;
+}
+
 .form-control {
   @extend %form-control;
   @include placeholder;
   &:focus {
     @extend %form-control-focus;
   }
+  &[disabled] {
+    @extend %form-control-disabled;
+  }
+  &[readonly] {
+    @extend %form-control-readonly;
+  }
+}
+
+textarea.form-control {
+  height: auto;
 }
 
 .form-select {
@@ -90,8 +120,65 @@ body {
     color: $color-base;
     content: attr(data-placeholder);
   }
+  &.disabled {
+    @extend %form-control-disabled;
+  }
   & > select {
     cursor: pointer;
     @extend %hidden-cover;
   }
+  &.disabled > select {
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-variant($color, $background, $border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+
+  &:hover {
+    color: $color;
+    background-color: darken($background, 10%);
+    border-color: darken($border, 12%);
+  }
+
+  &:focus, &.focus {
+    color: $color;
+    background-color: darken($background, 10%);
+    border-color: darken($border, 25%);
+  }
+
+  &:active, &.active {
+    color: $color;
+    background-color: darken($background, 10%);
+    border-color: darken($border, 12%);
+    &:hover, &:focus, &.focus {
+      color: $color;
+      background-color: darken($background, 17%);
+      border-color: darken($border, 25%);
+    }
+  }
+
+  &.disabled, &[disabled] {
+    &:hover, &:focus, &.focus {
+      background-color: $background;
+      border-color: $border;
+    }
+  }
+}
+
+.btn {
+  @extend %control;
+  @include button-variant($color-btn-default, $bgcolor-btn-default, $bdcolor-btn-default);
+  &[disabled] {
+    cursor: not-allowed;
+  }
+}
+
+/***********************************************************************************
+   布局系统
+ **********************************************************************************/
+.padding-sm {
+
 }

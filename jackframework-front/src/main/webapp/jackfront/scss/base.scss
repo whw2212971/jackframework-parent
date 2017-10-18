@@ -1,13 +1,19 @@
 @charset "UTF-8";
 
-$black1: #333 !default;
-$black2: #666 !default;
-$black3: #999 !default;
-$black4: #ccc !default;
-$black5: #eee !default;
+$color-white: #fff;
 
-$color-base: $black2 !default;
+$color-black1: #333 !default;
+$color-black2: #666 !default;
+$color-black3: #999 !default;
+$color-black4: #ccc !default;
+$color-black5: #eee !default;
+
+$color-base: $color-black1 !default;
 $color-input-focus: #66afe9 !default;
+
+$color-btn-default: $color-base !default;
+$bgcolor-btn-default: $color-white !default;
+$bdcolor-btn-default: $color-black4 !default;
 
 $font-family-sans-serif: "Helvetica Neue", Helvetica, Arial, sans-serif !default;
 $font-size-base: 14px !default;
@@ -21,14 +27,14 @@ $padding-large-horizontal: 16px !default;
 $padding-small-vertical: 5px !default;
 $padding-small-horizontal: 10px !default;
 
-$line-height-base: 20px;
+$line-height-base: 20px !default;
 $line-height-proportion: ($line-height-base / $font-size-base) !default;
 
 $border-radius-base: 4px !default;
 
 $input-height-base: ($line-height-base + ($padding-base-vertical * 2) + 2) !default;
 
-$z-index-hidden-cover: 5;
+$z-index-hidden-cover: 5 !default;
 
 // Drop shadows
 //
@@ -46,12 +52,12 @@ $z-index-hidden-cover: 5;
   box-sizing: $model;
 }
 
-@mixin simulate-placeholder($color: $black4) {
+@mixin simulate-placeholder($color: $color-black4) {
   color: $color;
 }
 
 // Placeholder text
-@mixin placeholder($color: $black4) {
+@mixin placeholder($color: $color-black4) {
   // Firefox
   &::-moz-placeholder {
     color: $color;

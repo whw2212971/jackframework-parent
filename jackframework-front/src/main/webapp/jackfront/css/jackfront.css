@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .form-select:after {
   overflow: hidden;
   white-space: nowrap;
@@ -30,7 +31,13 @@
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
-  color: #666;
+  color: #333;
+}
+
+input, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
 }
 
 /***********************************************************************************
@@ -51,16 +58,19 @@ body {
 /***********************************************************************************
    Form
  **********************************************************************************/
-.form-control, .form-select {
-  color: #666;
+.form-control, .form-select, .btn {
+  color: #333;
   display: block;
-  width: 100%;
   height: 34px;
   font-size: 14px;
   line-height: 1.4285714286;
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 6px 12px;
+}
+
+.form-control, .form-select {
+  width: 100%;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
@@ -74,6 +84,15 @@ body {
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 
+.form-control[disabled], .form-select.disabled, .form-control[readonly] {
+  background-color: #eee;
+  opacity: 1;
+}
+
+.form-control[disabled], .form-select.disabled {
+  cursor: not-allowed;
+}
+
 .form-control::-moz-placeholder {
   color: #ccc;
   opacity: 1;
@@ -83,6 +102,10 @@ body {
 }
 .form-control::-webkit-input-placeholder {
   color: #ccc;
+}
+
+textarea.form-control {
+  height: auto;
 }
 
 .form-select {
@@ -103,11 +126,51 @@ body {
   color: #66afe9;
 }
 .form-select.selected:after {
-  color: #666;
+  color: #333;
   content: attr(data-placeholder);
 }
 .form-select > select {
   cursor: pointer;
 }
+.form-select.disabled > select {
+  cursor: not-allowed;
+}
+
+.btn {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.btn:hover {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.btn:focus, .btn.focus {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #8c8c8c;
+}
+.btn:active, .btn.active {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.btn:active:hover, .btn:active:focus, .btn:active.focus, .btn.active:hover, .btn.active:focus, .btn.active.focus {
+  color: #333;
+  background-color: #d4d4d4;
+  border-color: #8c8c8c;
+}
+.btn.disabled:hover, .btn.disabled:focus, .btn.disabled.focus, .btn[disabled]:hover, .btn[disabled]:focus, .btn[disabled].focus {
+  background-color: #fff;
+  border-color: #ccc;
+}
+.btn[disabled] {
+  cursor: not-allowed;
+}
+
+/***********************************************************************************
+   布局系统
+ **********************************************************************************/
 
 /*# sourceMappingURL=jackfront.css.map */

@@ -17,25 +17,127 @@
             border: 0;
             border-top: 1px solid #ccc;
         }
+
+        .chunk {
+            padding: 5px 0;
+            display: block;
+        }
+
+        .chunk > label {
+            display: block;
+            margin: 5px 0;
+        }
+
+        .menu {
+            padding-top: 15px;
+            position: fixed;
+            left: 0;
+        }
+
+        .menu ul {
+            padding-left: 30px;
+        }
+
+        .menu ul > li {
+            padding: 10px 0;
+        }
+
+        .content {
+            margin-left: 205px;
+        }
     </style>
 </head>
 <body>
-<div class="section">
-    <h1>输入框</h1>
-    <hr/>
-    <input class="form-control" placeholder="Normal Input"/>
+<div class="menu">
+    <ul>
+        <li>
+            <a>表单控件</a>
+            <ul>
+                <li><a href="#Input">输入框</a></li>
+                <li><a href="#Textarea">文本框</a></li>
+                <li><a href="#Select">下拉框</a></li>
+                <li><a href="#Select">按钮</a></li>
+            </ul>
+        </li>
+    </ul>
 </div>
-<div class="section">
-    <h1>下拉框</h1>
-    <hr/>
-    <div class="form-select" data-placeholder="Normal Content">
-        <select title="Please Select One">
-            <option value="">Placeholder</option>
-            <option>Option 1</option>
-            <option>Option 2</option>
-            <option>A lot of content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content content</option>
-        </select>
+<div class="content">
+    <div class="section">
+        <h1 id="Input">输入框</h1>
+        <hr/>
+        <div class="chunk">
+            <label>普通</label>
+            <input class="form-control" placeholder="Normal Input"/>
+        </div>
+        <div class="chunk">
+            <label>只读</label>
+            <input class="form-control" placeholder="Normal Input" readonly/>
+        </div>
+        <div class="chunk">
+            <label>禁用</label>
+            <input class="form-control" placeholder="Normal Input" disabled/>
+        </div>
     </div>
+
+    <div class="section">
+        <h1 id="Textarea">文本框</h1>
+        <hr/>
+        <div class="chunk">
+            <label>普通</label>
+            <textarea class="form-control" placeholder="Text area"></textarea>
+        </div>
+        <div class="chunk">
+            <label>只读</label>
+            <textarea class="form-control" placeholder="Text area" readonly></textarea>
+        </div>
+        <div class="chunk">
+            <label>禁用</label>
+            <textarea class="form-control" placeholder="Text area" disabled></textarea>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1 id="Select">下拉框</h1>
+        <hr/>
+        <div class="chunk">
+            <label>普通</label>
+            <div class="form-select" data-placeholder="Normal Content">
+                <select title="Please Select One">
+                    <option value="">Placeholder</option>
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                    <option>A lot of content content content content content content content content content content
+                        content
+                        content content content content content content content content content content content content
+                        content
+                        content content content content content content content content
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="chunk">
+            <label>禁用</label>
+            <div class="form-select disabled" data-placeholder="Normal Content">
+                <select title="Please Select One" disabled>
+                    <option value="">Placeholder</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1 id="Button">按钮</h1>
+        <hr/>
+        <div class="chunk">
+            <label>普通</label>
+            <button class="btn">按钮</button>
+        </div>
+        <div class="chunk">
+            <label>禁用</label>
+            <button disabled class="btn">按钮</button>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>
