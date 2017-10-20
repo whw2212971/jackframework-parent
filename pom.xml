@@ -6,13 +6,16 @@
 
     <groupId>com.github.jackframework</groupId>
     <artifactId>jackframework-parent</artifactId>
-    <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
 
     <modules>
         <module>jackframework-common</module>
         <module>jackframework-jdbc</module>
         <module>jackframework-front</module>
+        <module>jackframework-service</module>
+        <module>jackframework-webtest</module>
     </modules>
 
     <name>Jack Framework</name>
@@ -92,7 +95,7 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.4</version>
@@ -107,7 +110,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>

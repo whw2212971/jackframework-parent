@@ -4,6 +4,7 @@ import org.jackframework.common.CaptainTools;
 import org.jackframework.common.asm.MethodVisitor;
 import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.asm.Type;
+import org.jackframework.common.asm.signature.SignatureWriter;
 
 import java.lang.reflect.Method;
 
@@ -26,6 +27,14 @@ public abstract class AsmTools {
                 mv.visitTypeInsn(Opcodes.CHECKCAST, Type.getInternalName(parameterType));
             }
         }
+    }
+
+    public static String getSignature(Type type) {
+        return getSignature(new SignatureWriter(), type);
+    }
+
+    protected static String getSignature(SignatureWriter writer, Type type) {
+        return null;
     }
 
 }

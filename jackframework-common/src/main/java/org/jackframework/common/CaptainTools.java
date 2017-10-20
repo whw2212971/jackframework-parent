@@ -121,9 +121,19 @@ public abstract class CaptainTools {
                 isPublic(constructor.getParameterTypes());
     }
 
-    public static boolean isPublic(Class<?>[] paramTypes) {
+    public static boolean isPublic(Class<?>... paramTypes) {
         for (Class<?> type : paramTypes) {
             if (Modifier.isPublic(type.getModifiers())) {
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isPublic(Type... paramTypes) {
+        for (Type type : paramTypes) {
+            if (Modifier.isPublic(getTypeClass(type).getModifiers())) {
                 continue;
             }
             return false;
