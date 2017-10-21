@@ -5,6 +5,8 @@ import org.jackframework.common.asm.ClassWriter;
 import org.jackframework.common.asm.MethodVisitor;
 import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.exceptions.RunningException;
+import org.jackframework.common.exceptions.WrappedRunningException;
+import org.jackframework.common.reflect.AsmTools;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -18,11 +20,11 @@ public abstract class AsmParamBean {
 
     public abstract Object[] getArguments();
 
+    @SuppressWarnings("unchecked")
     public static AsmParamBean createAsmParamBean(Method method) {
-        return null;
-    }
+        Type[]   paramTypes = method.getGenericExceptionTypes();
+        String[] paramNames = ConverterUtils.getParameterNames(method);
 
-    protected static AsmParamBean createAsmParamBean(Method method, Type[] paramTypes, String[] paramNames) {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
         String className      = BEAN_CLASS_PREFIX + CaptainTools.nextIncrement();
@@ -49,7 +51,7 @@ public abstract class AsmParamBean {
         // Object[] result = new Object[paramSize];
         iConst(mv, paramSize);
         mv.visitInsn(Opcodes.ANEWARRAY);
-        mv.visitVarInsn(Opcodes.AASTORE, 1);
+        mv.visitVarInsn(Opcodes.ASTORE, 1);
 
         for (int i = 0; i < paramSize; i++) {
             Type   paramType = paramTypes[i];
@@ -62,16 +64,26 @@ public abstract class AsmParamBean {
 
             String fieldDesc = getDescriptor(CaptainTools.getTypeClass(paramType));
 
-            cw.visitField(Opcodes.ACC_PUBLIC, paramName, fieldDesc, null, null);
+            cw.visitField(Opcodes.ACC_PUBLIC, paramName, fieldDesc, AsmTools.getSignature(paramType), null);
 
             mv.visitVarInsn(Opcodes.ALOAD, 1);
             iConst(mv, i);
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitFieldInsn(Opcodes.GETFIELD, className, paramName, fieldDesc);
-
+            mv.visitInsn(Opcodes.AASTORE);
         }
 
-        return null;
+        mv.visitVarInsn(Opcodes.ALOAD, 1);
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+
+        try {
+            return (AsmParamBean)
+                    CaptainTools.loadByteCodes(className, cw.toByteArray()).getConstructor().newInstance();
+        } catch (Throwable e) {
+            throw new WrappedRunningException(e);
+        }
     }
 
     protected static void iConst(MethodVisitor mv, int iConst) {
