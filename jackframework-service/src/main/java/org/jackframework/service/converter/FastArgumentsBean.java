@@ -7,16 +7,13 @@ import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.common.exceptions.WrappedRunningException;
 import org.jackframework.common.reflect.AsmTools;
-import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.jackframework.service.component.ServiceMethodHandler;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import static org.jackframework.common.asm.Type.*;
 
 public abstract class FastArgumentsBean {
-
-    protected static final DefaultParameterNameDiscoverer PARAMETER_DISCOVERER = new DefaultParameterNameDiscoverer();
 
     protected static final String BEAN_CLASS_PREFIX =
             FastArgumentsBean.class.getSimpleName() + '$' + System.identityHashCode(FastArgumentsBean.class) + "$";
@@ -24,9 +21,9 @@ public abstract class FastArgumentsBean {
     public abstract Object[] getArguments();
 
     @SuppressWarnings("unchecked")
-    public static Class<? extends FastArgumentsBean> createFastArgumentsBeanClass(Method method) {
-        Type[]   paramTypes = method.getGenericParameterTypes();
-        String[] paramNames = PARAMETER_DISCOVERER.getParameterNames(method);
+    public static Class<? extends FastArgumentsBean> createFastArgumentsBeanClass(ServiceMethodHandler handler) {
+        Type[]   paramTypes = handler.getGenericParameterTypes();
+        String[] paramNames = handler.getParameterNames();
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
@@ -63,11 +60,16 @@ public abstract class FastArgumentsBean {
 
             if (!CaptainTools.isPublic(paramType)) {
                 throw new RunningException(
-                        "The parameter {} of method {} is not public.", paramName, method.toGenericString());
+                        "The parameter '{}' of method '{}' is not public.",
+                        paramName, handler.getServiceMethod().getMethod().toGenericString());
             }
 
             Class<?> paramClass = CaptainTools.getTypeClass(paramType);
-            String   fieldDesc  = getDescriptor(paramClass);
+            if (paramClass.isPrimitive()) {
+                paramClass = CaptainTools.getPackingClass(paramClass);
+            }
+
+            String fieldDesc = getDescriptor(paramClass);
 
             cw.visitField(Opcodes.ACC_PUBLIC, paramName, fieldDesc,
                     paramType instanceof Class ? null : AsmTools.getSignature(paramType), null);
@@ -76,15 +78,6 @@ public abstract class FastArgumentsBean {
             iConst(mv, i);
             mv.visitVarInsn(Opcodes.ALOAD, 0);
             mv.visitFieldInsn(Opcodes.GETFIELD, className, paramName, fieldDesc);
-
-            if (paramClass.isPrimitive()) {
-                Class<?> packingClass     = CaptainTools.getPackingClass(paramClass);
-                Method   packingMethod    = CaptainTools.getPackingMethod(paramClass);
-                String   packingClassName = getInternalName(packingClass);
-                mv.visitMethodInsn(Opcodes.INVOKESTATIC,
-                        packingClassName, packingMethod.getName(), getMethodDescriptor(packingMethod), false);
-            }
-
             mv.visitInsn(Opcodes.AASTORE);
         }
 

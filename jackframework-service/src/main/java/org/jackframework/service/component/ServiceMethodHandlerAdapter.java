@@ -8,18 +8,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.support.WebContentGenerator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServiceMethodHandlerAdapter implements HandlerAdapter, ApplicationContextAware {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ServiceMethodHandlerAdapter.class);
+
+    protected static final Collection<String>
+            SUPPORT_METHODS = Collections.singletonList(WebContentGenerator.METHOD_POST);
+
 
     protected Map<ServiceMethodHandler, ServiceTypeConverter>
             converterCache = new ConcurrentHashMap<ServiceMethodHandler, ServiceTypeConverter>();
@@ -40,12 +47,14 @@ public class ServiceMethodHandlerAdapter implements HandlerAdapter, ApplicationC
             synchronized (this) {
                 typeConverter = converterCache.get(serviceHandler);
                 if (typeConverter == null) {
-                    typeConverter = typeConverterFactory
-                            .createServiceTypeConverter(serviceHandler.getServiceMethod().getMethod());
+                    typeConverter = typeConverterFactory.createServiceTypeConverter(serviceHandler);
                     converterCache.put(serviceHandler, typeConverter);
                 }
             }
         }
+
+        checkRequest(request);
+
         HttpProcessContext processContext = new HttpProcessContext();
         processContext.setRequest(request);
         processContext.setResponse(response);
@@ -85,6 +94,13 @@ public class ServiceMethodHandlerAdapter implements HandlerAdapter, ApplicationC
             typeConverterFactory = typeConverterFactories.iterator().next();
             LOGGER.warn("More than one bean of type '{}' was found, only use the first one {}.",
                     ServiceTypeConverterFactory.class.getName(), typeConverterFactory);
+        }
+    }
+
+    protected void checkRequest(HttpServletRequest request) throws Exception {
+        String method = request.getMethod();
+        if (!WebContentGenerator.METHOD_POST.equals(method)) {
+            throw new HttpRequestMethodNotSupportedException(method, SUPPORT_METHODS);
         }
     }
 

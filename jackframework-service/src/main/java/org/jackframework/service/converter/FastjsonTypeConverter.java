@@ -6,6 +6,7 @@ import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.jackframework.common.CaptainTools;
 import org.jackframework.service.component.HttpProcessContext;
+import org.jackframework.service.component.ServiceMethodHandler;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -25,13 +26,12 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
 
     public FastjsonTypeConverter(ParserConfig parserConfig,
                                  Feature[] features, SerializerFeature[] serializerFeatures,
-                                 Class<? extends FastArgumentsBean> fastArgumentsBeanClass,
-                                 int paramCount) {
+                                 ServiceMethodHandler handler) {
         this.parserConfig = parserConfig;
         this.features = features;
         this.serializerFeatures = serializerFeatures;
-        this.fastArgumentsBeanClass = fastArgumentsBeanClass;
-        this.paramCount = paramCount;
+        this.fastArgumentsBeanClass = FastArgumentsBean.createFastArgumentsBeanClass(handler);
+        this.paramCount = handler.getParamCount();
     }
 
     @Override

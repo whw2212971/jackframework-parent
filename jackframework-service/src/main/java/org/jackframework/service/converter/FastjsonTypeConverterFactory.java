@@ -3,8 +3,7 @@ package org.jackframework.service.converter;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-
-import java.lang.reflect.Method;
+import org.jackframework.service.component.ServiceMethodHandler;
 
 public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory {
 
@@ -15,7 +14,7 @@ public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory
     protected SerializerFeature[] serializerFeatures;
 
     @Override
-    public ServiceTypeConverter createServiceTypeConverter(Method handlerMethod) {
+    public ServiceTypeConverter createServiceTypeConverter(ServiceMethodHandler handler) {
         if (parserConfig == null) {
             parserConfig = ParserConfig.getGlobalInstance();
         }
@@ -25,10 +24,7 @@ public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory
         if (serializerFeatures == null) {
             serializerFeatures = new SerializerFeature[0];
         }
-        return new FastjsonTypeConverter(
-                parserConfig, features, serializerFeatures,
-                FastArgumentsBean.createFastArgumentsBeanClass(handlerMethod),
-                handlerMethod.getParameterTypes().length);
+        return new FastjsonTypeConverter(parserConfig, features, serializerFeatures, handler);
     }
 
     public ParserConfig getParserConfig() {
