@@ -25,7 +25,7 @@ public abstract class FastArgumentsBean {
 
     @SuppressWarnings("unchecked")
     public static Class<? extends FastArgumentsBean> createFastArgumentsBeanClass(Method method) {
-        Type[]   paramTypes = method.getGenericExceptionTypes();
+        Type[]   paramTypes = method.getGenericParameterTypes();
         String[] paramNames = PARAMETER_DISCOVERER.getParameterNames(method);
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
@@ -39,6 +39,7 @@ public abstract class FastArgumentsBean {
         String        constructorDesc = getMethodDescriptor(VOID_TYPE);
         MethodVisitor mv              = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", constructorDesc, null, null);
         // super();
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassName, "<init>", constructorDesc, false);
         mv.visitInsn(Opcodes.RETURN);
         // }
@@ -49,14 +50,14 @@ public abstract class FastArgumentsBean {
         mv = cw.visitMethod(
                 Opcodes.ACC_PUBLIC, "getArguments", getMethodDescriptor(getType(Object[].class)), null, null);
 
-        int paramSize = paramTypes.length;
+        int paramCount = paramTypes.length;
 
         // Object[] result = new Object[paramSize];
-        iConst(mv, paramSize);
-        mv.visitInsn(Opcodes.ANEWARRAY);
+        iConst(mv, paramCount);
+        mv.visitTypeInsn(Opcodes.ANEWARRAY, getInternalName(Object.class));
         mv.visitVarInsn(Opcodes.ASTORE, 1);
 
-        for (int i = 0; i < paramSize; i++) {
+        for (int i = 0; i < paramCount; i++) {
             Type   paramType = paramTypes[i];
             String paramName = paramNames[i];
 

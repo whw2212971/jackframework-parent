@@ -20,7 +20,9 @@
     </mvc:annotation-driven>
 
     <!-- EndService 注解支持 -->
-    <bean class="org.jackframework.service.component.ServiceAnnotationHandlerMapping"/>
+    <bean class="org.jackframework.service.component.ServiceAnnotationHandlerMapping">
+        <property name="order" value="0"/>
+    </bean>
 
     <!-- EndService 适配器 -->
     <bean class="org.jackframework.service.component.ServiceMethodHandlerAdapter"/>
@@ -35,12 +37,12 @@
     <mvc:resources mapping="/static/**" location="/static/"/>
 
     <!-- 扫描 Controller -->
-    <context:component-scan base-package="org.jackframework.webtest.controller" use-default-filters="false">
+    <context:component-scan base-package="org.jackframework.testweb.controller" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
     <!-- 扫描 Service -->
-    <context:component-scan base-package="org.jackframework.servicetest.service" use-default-filters="false">
+    <context:component-scan base-package="org.jackframework.testservice.service" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.jackframework.service.annotation.EndService"/>
     </context:component-scan>
 

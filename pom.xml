@@ -13,10 +13,9 @@
     <modules>
         <module>jackframework-common</module>
         <module>jackframework-jdbc</module>
-        <module>jackframework-front</module>
         <module>jackframework-service</module>
-        <module>jackframework-webtest</module>
-        <module>jackframework-service-test</module>
+        <module>jackframework-test-service</module>
+        <module>jackframework-test-web</module>
     </modules>
 
     <name>Jack Framework</name>

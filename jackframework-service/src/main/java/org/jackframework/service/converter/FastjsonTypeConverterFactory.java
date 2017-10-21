@@ -19,6 +19,12 @@ public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory
         if (parserConfig == null) {
             parserConfig = ParserConfig.getGlobalInstance();
         }
+        if (features == null) {
+            features = new Feature[0];
+        }
+        if (serializerFeatures == null) {
+            serializerFeatures = new SerializerFeature[0];
+        }
         return new FastjsonTypeConverter(
                 parserConfig, features, serializerFeatures,
                 FastArgumentsBean.createFastArgumentsBeanClass(handlerMethod),
