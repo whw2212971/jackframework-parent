@@ -24,14 +24,17 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
 
     protected int paramCount;
 
+    protected ResultWrapper resultWrapper;
+
     public FastjsonTypeConverter(ParserConfig parserConfig,
                                  Feature[] features, SerializerFeature[] serializerFeatures,
-                                 ServiceMethodHandler handler) {
+                                 ServiceMethodHandler handler, ResultWrapper resultWrapper) {
         this.parserConfig = parserConfig;
         this.features = features;
         this.serializerFeatures = serializerFeatures;
         this.fastArgumentsBeanClass = FastArgumentsBean.createFastArgumentsBeanClass(handler);
         this.paramCount = handler.getParamCount();
+        this.resultWrapper = resultWrapper;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
         try {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json;charset=utf-8");
-            JSON.writeJSONString(writer, result, serializerFeatures);
+            JSON.writeJSONString(writer, resultWrapper.wrapResult(processContext, result), serializerFeatures);
         } finally {
             CaptainTools.close(writer);
         }

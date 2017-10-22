@@ -13,6 +13,8 @@ public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory
 
     protected SerializerFeature[] serializerFeatures;
 
+    protected ResultWrapper resultWrapper;
+
     @Override
     public ServiceTypeConverter createServiceTypeConverter(ServiceMethodHandler handler) {
         if (parserConfig == null) {
@@ -24,7 +26,10 @@ public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory
         if (serializerFeatures == null) {
             serializerFeatures = new SerializerFeature[0];
         }
-        return new FastjsonTypeConverter(parserConfig, features, serializerFeatures, handler);
+        if (resultWrapper == null) {
+            resultWrapper = new FastjsonResultWrapper();
+        }
+        return new FastjsonTypeConverter(parserConfig, features, serializerFeatures, handler, resultWrapper);
     }
 
     public ParserConfig getParserConfig() {
@@ -49,6 +54,14 @@ public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory
 
     public void setSerializerFeatures(SerializerFeature[] serializerFeatures) {
         this.serializerFeatures = serializerFeatures;
+    }
+
+    public ResultWrapper getResultWrapper() {
+        return resultWrapper;
+    }
+
+    public void setResultWrapper(ResultWrapper resultWrapper) {
+        this.resultWrapper = resultWrapper;
     }
 
 }
