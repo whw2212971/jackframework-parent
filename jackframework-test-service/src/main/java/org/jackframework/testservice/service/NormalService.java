@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @EndService
 @Publish("/api/normal")
@@ -47,7 +48,7 @@ public class NormalService {
     }
 
     /**
-     * 主键查询（全部字段）
+     * 根据ID查询（全部字段）
      */
     @Publish("/findDataById")
     public TData findDataById(Long dataId) {
@@ -55,7 +56,7 @@ public class NormalService {
     }
 
     /**
-     * 主键查询(包含指定字段)
+     * 根据ID查询(包含指定字段)
      */
     @Publish("/findDataIncludeById")
     public TData findDataIncludeById(Long dataId) {
@@ -63,7 +64,7 @@ public class NormalService {
     }
 
     /**
-     * 主键查询(不包含指定字段)
+     * 根据ID查询(不包含指定字段)
      */
     @Publish("/findDataExcludeById")
     public TData findDataExcludeById(Long dataId) {
@@ -71,7 +72,7 @@ public class NormalService {
     }
 
     /**
-     * 主键查询(单个字段)
+     * 根据ID查询(单个字段)
      */
     @Publish("/findDataStringById")
     public String findDataStringById(Long dataId) {
@@ -98,6 +99,22 @@ public class NormalService {
                 TData.class,
                 Excludes.excludes("dataInt"),
                 "where data_date >= ? and data_date <= ?", beginDate, endDate);
+    }
+
+    /**
+     * 条件查询（返回MapList）
+     */
+    @Publish("/findDataMapList")
+    public List<Map<String, Object>> findDataMapList() {
+        return commonDao.findMapList(TData.class, "1=1");
+    }
+
+    /**
+     * 条件查询（返回单个Map）
+     */
+    @Publish("/findDataMap")
+    public Map<String, Object> findDataMap(String dataId) {
+        return commonDao.findMap(TData.class, "where data_id=?", dataId);
     }
 
     /**
@@ -152,12 +169,18 @@ public class NormalService {
         return commonDao.update(TData.class, "set data_string = ?", dataString);
     }
 
+    /**
+     * 根据ID删除数据
+     */
     @Publish("/deleteDataById")
     @Transactional
     public int deleteDataById(Long dataId) {
         return commonDao.delete(TData.class, dataId);
     }
 
+    /**
+     * 删除指定条件的数据
+     */
     @Publish("/deleteDataBetween")
     @Transactional
     public int deleteBetween(Date beginDate, Date endDate) {

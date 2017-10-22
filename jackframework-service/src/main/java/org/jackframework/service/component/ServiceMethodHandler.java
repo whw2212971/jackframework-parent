@@ -122,4 +122,10 @@ public class ServiceMethodHandler {
         return serviceMethod.invoke(getBeanObject(), args);
     }
 
+    @Override
+    public String toString() {
+        return CaptainTools.formatMessage("{}: {}",
+                ServiceMethodHandler.class.getSimpleName(), serviceMethod.getMethod().toGenericString());
+    }
+
 }

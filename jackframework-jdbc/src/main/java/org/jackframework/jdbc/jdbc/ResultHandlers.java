@@ -121,7 +121,7 @@ public class ResultHandlers {
             ResultSet                 resultSet    = queryContext.getResultSet();
             List<FieldColumn>         fieldColumns = queryContext.getSelectedColumns();
             List<Map<String, Object>> result       = new ArrayList<Map<String, Object>>();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 Map<String, Object> dataMap = new LinkedHashMap<String, Object>();
                 int                 index   = 1;
                 for (FieldColumn fieldColumn : fieldColumns) {
