@@ -2,6 +2,7 @@ package org.jackframework.service.component;
 
 import org.jackframework.service.annotation.EndService;
 import org.jackframework.service.annotation.Publish;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
@@ -9,11 +10,11 @@ import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 import java.lang.reflect.Method;
 
-public class ServiceAnnotationHandlerMapping extends AbstractUrlHandlerMapping {
+public class ServiceAnnotationHandlerMapping extends AbstractUrlHandlerMapping implements InitializingBean {
 
     @Override
-    protected void initApplicationContext(ApplicationContext context) {
-        super.initApplicationContext(context);
+    public void afterPropertiesSet() throws Exception {
+        ApplicationContext context = getApplicationContext();
         for (String beanName : context.getBeanNamesForAnnotation(EndService.class)) {
             Class<?> handlerType    = context.getType(beanName);
             Publish  typePublishApi = context.findAnnotationOnBean(beanName, Publish.class);

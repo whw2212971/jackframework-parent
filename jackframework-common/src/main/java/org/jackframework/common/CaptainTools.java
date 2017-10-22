@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class CaptainTools {
@@ -326,8 +327,16 @@ public abstract class CaptainTools {
         return object == null || object.toString().isEmpty();
     }
 
+    public static boolean isEmpty(Collection<?> collection) {
+        return collection == null || collection.isEmpty();
+    }
+
     public static boolean isNotEmpty(Object object) {
         return !isEmpty(object);
+    }
+
+    public static boolean isNotEmpty(Collection<?> collection) {
+        return !isEmpty(collection);
     }
 
     public static boolean isBlank(Object object) {
@@ -345,6 +354,36 @@ public abstract class CaptainTools {
 
     public static boolean isNotBlank(Object object) {
         return !isBlank(object);
+    }
+
+    public static void assertNotNull(Object object, String message, Object... args) {
+        if (object == null) {
+            throw new RunningException(message, args);
+        }
+    }
+
+    public static void assertNotEmpty(Object object, String message, Object... args) {
+        if (isEmpty(object)) {
+            throw new RunningException(message, args);
+        }
+    }
+
+    public static void assertNotBlank(Object object, String message, Object... args) {
+        if (isBlank(object)) {
+            throw new RunningException(message, args);
+        }
+    }
+
+    public static void assertTrue(boolean expression, String message, Object... args) {
+        if (!expression) {
+            throw new RunningException(message, args);
+        }
+    }
+
+    public static void assertFalse(boolean expression, String message, Object... args) {
+        if (expression) {
+            throw new RunningException(message, args);
+        }
     }
 
     public static String toString(InputStream inputStream) {

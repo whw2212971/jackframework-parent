@@ -34,7 +34,12 @@ public class DataAccessChannelFactory {
     public DataAccessChannel getDataAccessChannel(Class<?> dataType) {
         DataAccessChannel dataAccessChannel = dataAccessChannelMap.get(dataType);
         if (dataAccessChannel == null) {
-            dataAccessChannelMap.put(dataType, dataAccessChannel = createDataAccessChannel(dataType));
+            synchronized (this) {
+                dataAccessChannel = dataAccessChannelMap.get(dataType);
+                if (dataAccessChannel == null) {
+                    dataAccessChannelMap.put(dataType, dataAccessChannel = createDataAccessChannel(dataType));
+                }
+            }
         }
         return dataAccessChannel;
     }
@@ -115,17 +120,17 @@ public class DataAccessChannelFactory {
 
         Field field = fieldMap.get(pkName);
         if (field == null) {
-            throw new CommonDaoException("Could not found the primary field, column: {}.", pkName);
+            throw new CommonDaoException("Could not found the primary field, column: '{}'.", pkName);
         }
 
         Method getter = CaptainTools.findGetter(field);
         if (getter == null) {
-            throw new CommonDaoException("Could not found the getter, field: {}.", field.toGenericString());
+            throw new CommonDaoException("Could not found the getter, field: '{}'.", field.toGenericString());
         }
 
         Method setter = CaptainTools.findSetter(field);
         if (setter == null) {
-            throw new CommonDaoException("Could not found the setter, field: {}.", field.toGenericString());
+            throw new CommonDaoException("Could not found the setter, field: '{}'.", field.toGenericString());
         }
 
         int               length       = table.getColumnsCount();
@@ -140,10 +145,10 @@ public class DataAccessChannelFactory {
                 continue;
             }
             if ((getter = CaptainTools.findGetter(field)) == null) {
-                throw new CommonDaoException("Could not found the getter, field: {}.", field.toGenericString());
+                throw new CommonDaoException("Could not found the getter, field: '{}'.", field.toGenericString());
             }
             if ((setter = CaptainTools.findSetter(field)) == null) {
-                throw new CommonDaoException("Could not found the setter, field: {}.", field.toGenericString());
+                throw new CommonDaoException("Could not found the setter, field: '{}'.", field.toGenericString());
             }
             fieldColumns.add(new FieldColumn(column, field, getter, setter));
         }

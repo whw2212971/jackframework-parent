@@ -22,13 +22,13 @@ public class Excludes {
     }
 
     @SuppressWarnings({"UseBulkOperation", "ManualArrayToCollectionCopy"})
-    public static Includes include(String fieldName, String... otherNames) {
+    public static Excludes excludes(String fieldName, String... otherNames) {
         Set<String> fieldNames = new HashSet<String>();
         fieldNames.add(fieldName);
         for (String name : otherNames) {
             fieldNames.add(name);
         }
-        return new Includes(fieldNames);
+        return new Excludes(fieldNames);
     }
 
 }

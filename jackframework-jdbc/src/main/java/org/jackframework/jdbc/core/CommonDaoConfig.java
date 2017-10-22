@@ -1,6 +1,8 @@
 package org.jackframework.jdbc.core;
 
+import org.jackframework.jdbc.dialect.AutoIncrementInsertChannelFactory;
 import org.jackframework.jdbc.dialect.InsertChannelFactory;
+import org.jackframework.jdbc.translators.CamelLowerSnakeTranslator;
 import org.jackframework.jdbc.translators.NameTranslator;
 
 import javax.sql.DataSource;
@@ -9,9 +11,9 @@ public class CommonDaoConfig {
 
     protected DataSource dataSource;
 
-    protected InsertChannelFactory insertChannelFactory;
+    protected InsertChannelFactory insertChannelFactory = new AutoIncrementInsertChannelFactory();
 
-    protected NameTranslator nameTranslator;
+    protected NameTranslator nameTranslator = new CamelLowerSnakeTranslator();
 
     public DataSource getDataSource() {
         return dataSource;

@@ -37,6 +37,7 @@ public class DataAccessChannel {
 
     public DataAccessChannel(CommonDaoConfig config, ClassTable classTable) {
         Class<?> dataType = classTable.getDataType();
+        this.classTable = classTable;
         this.dataSource = config.getDataSource();
         this.insertChannel = config.getInsertChannelFactory().createInsertChannel(config, classTable);
         this.deleteByIdSql = buildDeleteByIdSql(classTable);
@@ -104,11 +105,10 @@ public class DataAccessChannel {
         List<StatementParam> params     = new ArrayList<StatementParam>(fieldCount);
         boolean              isFirst    = true;
 
-        for (int i = 0; i < fieldCount; i++) {
+        for (int i = 1; i < fieldCount; i++) {
             FieldColumn fieldColumn = classTable.getFieldColumn(i);
             if (fieldColumn.getValue(dataObject) != null || contains(forceUpdateFields, fieldColumn)) {
                 if (isFirst) {
-                    cbuf.write("set ");
                     isFirst = false;
                 } else {
                     cbuf.write(',');
@@ -118,6 +118,7 @@ public class DataAccessChannel {
             }
         }
 
+        cbuf.append(" WHERE ").append(idColumn.getColumnName()).append("=?");
         params.add(createStatementParam(idColumn, dataObject));
 
         return update(cbuf.closeToString(), params);
@@ -380,9 +381,8 @@ public class DataAccessChannel {
     }
 
     protected static String buildUpdateOptimizePrefix(ClassTable classTable) {
-        String idNameName = classTable.getFieldColumn(0).getColumnName();
         return new CharsWriter().append("UPDATE ").append(classTable.getTable().getTableName())
-                .append(" SET ").append(idNameName).append('=').append(idNameName).closeToString();
+                .append(" SET ").closeToString();
     }
 
 }

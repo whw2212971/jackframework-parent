@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jackframework.testservice.mapper.NormalMapper">
+
+    <select id="findDataPage" resultType="org.jackframework.testservice.pojo.TData">
+        SELECT
+            t_data.data_id as dataId,
+            t_data.data_string as dataString,
+            t_data.data_int as dataInt,
+            t_data.data_decimal as dataDecimal,
+            t_data.data_date as dataDate,
+            t_data.data_datetime as dataDatetime,
+            t_data.data_boolean as dataBoolean
+        FROM
+            t_data
+    </select>
+
+</mapper>

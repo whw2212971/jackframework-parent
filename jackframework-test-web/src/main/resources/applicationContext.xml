@@ -1,8 +1,149 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd">
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <!-- Session（内存） -->
+    <bean id="springSessionRepositoryFilter" class="org.springframework.session.web.http.SessionRepositoryFilter">
+        <constructor-arg>
+            <bean class="org.springframework.session.MapSessionRepository">
+                <property name="defaultMaxInactiveInterval" value="1800"/>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <!-- 只读数据源 -->
+    <bean id="readDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${dataSource.url}"/>
+        <property name="username" value="${dataSource.user}"/>
+        <property name="password" value="${dataSource.password}"/>
+
+        <property name="maxActive" value="${dataSource.maxActive}"/>
+        <property name="initialSize" value="${dataSource.initialSize}"/>
+        <property name="maxWait" value="${dataSource.maxWait}"/>
+        <property name="minIdle" value="${dataSource.minIdle}"/>
+
+        <property name="timeBetweenEvictionRunsMillis" value="${dataSource.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${dataSource.minEvictableIdleTimeMillis}"/>
+
+        <property name="testWhileIdle" value="${dataSource.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${dataSource.testOnBorrow}"/>
+        <property name="testOnReturn" value="${dataSource.testOnReturn}"/>
+
+        <property name="poolPreparedStatements" value="${dataSource.poolPreparedStatements}"/>
+        <property name="maxOpenPreparedStatements" value="${dataSource.maxOpenPreparedStatements}"/>
+
+        <property name="asyncInit" value="${dataSource.asyncInit}"/>
+
+        <property name="proxyFilters">
+            <list>
+                <bean class="com.alibaba.druid.wall.WallFilter">
+                    <property name="dbType" value="mysql"/>
+                    <property name="config">
+                        <bean class="com.alibaba.druid.wall.WallConfig" init-method="init">
+                            <property name="dir" value="META-INF/druid/wall/mysql"/>
+                            <property name="selectIntoAllow" value="false"/>
+                            <property name="deleteAllow" value="false"/>
+                            <property name="updateAllow" value="false"/>
+                            <property name="insertAllow" value="false"/>
+                            <property name="mergeAllow" value="false"/>
+                        </bean>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 可写数据源 -->
+    <bean id="writeDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${dataSource.url}"/>
+        <property name="username" value="${dataSource.user}"/>
+        <property name="password" value="${dataSource.password}"/>
+
+        <property name="maxActive" value="${dataSource.maxActive}"/>
+        <property name="initialSize" value="${dataSource.initialSize}"/>
+        <property name="maxWait" value="${dataSource.maxWait}"/>
+        <property name="minIdle" value="${dataSource.minIdle}"/>
+
+        <property name="timeBetweenEvictionRunsMillis" value="${dataSource.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${dataSource.minEvictableIdleTimeMillis}"/>
+
+        <property name="testWhileIdle" value="${dataSource.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${dataSource.testOnBorrow}"/>
+        <property name="testOnReturn" value="${dataSource.testOnReturn}"/>
+
+        <property name="poolPreparedStatements" value="${dataSource.poolPreparedStatements}"/>
+        <property name="maxOpenPreparedStatements" value="${dataSource.maxOpenPreparedStatements}"/>
+
+        <property name="asyncInit" value="${dataSource.asyncInit}"/>
+    </bean>
+
+    <!-- 读写分离数据源 -->
+    <bean id="dataSource" class="org.jackframework.jdbc.spring.ReadWriteSplittingDataSource" primary="true">
+        <property name="transactionManager" ref="txManager"/>
+        <property name="readDataSource" ref="readDataSource"/>
+        <property name="writeDataSource" ref="writeDataSource"/>
+    </bean>
+
+    <!-- 读写分离事务管理 -->
+    <bean id="txManager" class="org.jackframework.jdbc.spring.ReadWriteSplittingTransactionManager" primary="true">
+        <property name="transactionManager">
+            <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+                <property name="dataSource" ref="writeDataSource"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- 开启注解实事物 -->
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+    <!-- CommonDao -->
+    <bean class="org.jackframework.jdbc.core.CommonDao" init-method="init">
+        <property name="commonDaoConfig">
+            <bean class="org.jackframework.jdbc.core.CommonDaoConfig">
+                <property name="dataSource" ref="dataSource"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Mybatis -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath*:org/jackframework/*/mapper/*.xml"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <props>
+                            <prop key="reasonable">true</prop>
+                        </props>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!-- 扫描 Mapper -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="org.jackframework.*.mapper"/>
+    </bean>
+
+    <!-- EndService 注解支持 -->
+    <bean class="org.jackframework.service.component.ServiceAnnotationHandlerMapping">
+        <property name="order" value="0"/>
+    </bean>
+
+    <!-- EndService 适配器 -->
+    <bean class="org.jackframework.service.component.ServiceMethodHandlerAdapter"/>
+
+    <!-- 扫描 Service -->
+    <context:component-scan base-package="org.jackframework.testservice.service" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.jackframework.service.annotation.EndService"/>
+    </context:component-scan>
 
 </beans>
