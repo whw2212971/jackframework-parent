@@ -133,8 +133,8 @@ public class NormalService {
     @Transactional
     public int updateData(Long dataId, String dataString, Integer dataInt, BigDecimal dataDecimal,
                           Date dataDate, Date dataDatetime, Boolean dataBoolean) {
-        return commonDao
-                .update(createData(dataId, dataString, dataInt, dataDecimal, dataDate, dataDatetime, dataBoolean));
+        return commonDao.update(
+                createData(dataId, dataString, dataInt, dataDecimal, dataDate, dataDatetime, dataBoolean));
     }
 
     /**
