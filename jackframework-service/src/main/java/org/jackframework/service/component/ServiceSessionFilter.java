@@ -29,7 +29,7 @@ public class ServiceSessionFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        ServiceSessionHolder.setCurrentLocal((HttpServletRequest) request, sessionRepository);
+        ServiceSessionHolder.setCurrentLocal((HttpServletRequest) request);
         chain.doFilter(request, response);
     }
 

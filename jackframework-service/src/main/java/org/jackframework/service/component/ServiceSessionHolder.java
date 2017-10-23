@@ -1,61 +1,46 @@
 package org.jackframework.service.component;
 
 import org.jackframework.common.exceptions.WrappedRunningException;
-import org.springframework.session.ExpiringSession;
-import org.springframework.session.SessionRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.lang.reflect.Method;
 
 public class ServiceSessionHolder {
 
-    protected static final ThreadLocal<SessionContext> SESSION_CONTEXT_LOCAL = new ThreadLocal<SessionContext>();
+    protected static final ThreadLocal<SessionLocal> SESSION_CONTEXT_LOCAL = new ThreadLocal<SessionLocal>();
 
-    protected static final Method GET_SESSION_METHOD;
-
-    static {
-        try {
-            GET_SESSION_METHOD = Class.forName(
-                    "org.springframework.session.web.http.ExpiringSessionHttpSession").getMethod("getSession");
-            GET_SESSION_METHOD.setAccessible(true);
-        } catch (Throwable e) {
-            throw new WrappedRunningException(e);
-        }
-    }
-
-    public static ExpiringSession getSession() {
+    public static ServiceSession getSession() {
         return getSession(true);
     }
 
-    public static ExpiringSession getSession(boolean create) {
+    public static ServiceSession getSession(boolean create) {
         return SESSION_CONTEXT_LOCAL.get().getSession(create);
     }
 
-    protected static void setCurrentLocal(HttpServletRequest request,
-                                          SessionRepository<? extends ExpiringSession> sessionRepository) {
-        SESSION_CONTEXT_LOCAL.set(new SessionContext(request, sessionRepository));
+    protected static void setCurrentLocal(HttpServletRequest request) {
+        SESSION_CONTEXT_LOCAL.set(new SessionLocal(request));
     }
 
-    protected static class SessionContext {
+    protected static class SessionLocal {
 
         protected HttpServletRequest request;
 
-        protected SessionRepository<? extends ExpiringSession> sessionRepository;
+        protected ServiceSession currentSession;
 
-        public SessionContext(HttpServletRequest request,
-                              SessionRepository<? extends ExpiringSession> sessionRepository) {
+        public SessionLocal(HttpServletRequest request) {
             this.request = request;
-            this.sessionRepository = sessionRepository;
         }
 
-        public ExpiringSession getSession(boolean create) {
+        public ServiceSession getSession(boolean create) {
+            if (currentSession != null) {
+                return currentSession;
+            }
             HttpSession session = request.getSession(create);
             if (session == null) {
                 return null;
             }
             try {
-                return (ExpiringSession) GET_SESSION_METHOD.invoke(session);
+                return currentSession = new ServiceSession(session);
             } catch (Throwable e) {
                 throw new WrappedRunningException(e);
             }
