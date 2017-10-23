@@ -217,6 +217,11 @@ public class NormalService {
         return ServiceHolder.getSession().getAttribute(name);
     }
 
+    @Publish("/serviceException")
+    public void serviceException() {
+        throw new ServiceException(1001, "It's my fault!");
+    }
+
     protected TData createData(Long dataId, String dataString, Integer dataInt, BigDecimal dataDecimal,
                                Date dataDate, Date dataDatetime, Boolean dataBoolean) {
         TData data = new TData();

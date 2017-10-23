@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -38,7 +37,8 @@ public class ExceptionalHandlingFilter implements Filter {
         }
     }
 
-    protected void handleException(HttpServletRequest request, HttpServletResponse response, Throwable e) {
+    protected void handleException(
+            HttpServletRequest request, HttpServletResponse response, Throwable e) throws ServiceServletException {
         boolean     logged = false;
         PrintWriter out    = null;
         try {
@@ -64,7 +64,7 @@ public class ExceptionalHandlingFilter implements Filter {
                     request.getRequestDispatcher(errorPage).forward(request, response);
                     return;
                 }
-                throw new Exception(e);
+                throw new ServiceServletException(e);
             }
 
             int    errorCode;
@@ -82,7 +82,7 @@ public class ExceptionalHandlingFilter implements Filter {
             result.put("errorMessage", errorMessage);
 
             JSON.writeJSONString(out = response.getWriter(), result);
-        } catch (Exception wrap) {
+        } catch (ServiceServletException wrap) {
             throw wrap;
         } catch (Throwable ex) {
             if (!logged) {
@@ -212,59 +212,6 @@ public class ExceptionalHandlingFilter implements Filter {
 
     @Override
     public void destroy() {
-
-    }
-
-    private static class Exception extends RuntimeException {
-
-        public Exception(Throwable cause) {
-            super(cause);
-        }
-
-        @Override
-        public String getMessage() {
-            return getCause().getMessage();
-        }
-
-        @Override
-        public String getLocalizedMessage() {
-            return getCause().getLocalizedMessage();
-        }
-
-        @Override
-        public String toString() {
-            return getCause().toString();
-        }
-
-        @Override
-        public void printStackTrace() {
-            getCause().printStackTrace();
-        }
-
-        @Override
-        public void printStackTrace(PrintStream s) {
-            getCause().printStackTrace(s);
-        }
-
-        @Override
-        public void printStackTrace(PrintWriter s) {
-            getCause().printStackTrace(s);
-        }
-
-        @Override
-        public StackTraceElement[] getStackTrace() {
-            return getCause().getStackTrace();
-        }
-
-        @Override
-        public void setStackTrace(StackTraceElement[] stackTrace) {
-            getCause().setStackTrace(stackTrace);
-        }
-
-        @Override
-        public synchronized Throwable fillInStackTrace() {
-            return this;
-        }
 
     }
 

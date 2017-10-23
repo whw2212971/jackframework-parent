@@ -36,7 +36,7 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
     }
 
     @Override
-    public Object[] convertArguments(HttpProcessContext processContext) throws Throwable {
+    public Object[] convertArguments(HttpProcessContext processContext) throws Exception {
         InputStream in = null;
         try {
             in = processContext.getRequest().getInputStream();
@@ -57,7 +57,7 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
     }
 
     @Override
-    public void resolveResult(HttpProcessContext processContext, Object result) throws Throwable {
+    public void resolveResult(HttpProcessContext processContext, Object result) throws Exception {
         HttpServletResponse response = processContext.getResponse();
         PrintWriter         writer   = response.getWriter();
         try {

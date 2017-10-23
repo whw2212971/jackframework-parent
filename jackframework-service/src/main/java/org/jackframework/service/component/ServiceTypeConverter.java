@@ -1,11 +1,9 @@
 package org.jackframework.service.component;
 
-import org.jackframework.service.component.HttpProcessContext;
-
 public interface ServiceTypeConverter {
 
-    Object[] convertArguments(HttpProcessContext processContext) throws Throwable;
+    Object[] convertArguments(HttpProcessContext processContext) throws Exception;
 
-    void resolveResult(HttpProcessContext processContext, Object result) throws Throwable;
+    void resolveResult(HttpProcessContext processContext, Object result) throws Exception;
 
 }
