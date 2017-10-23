@@ -5,7 +5,7 @@ import org.jackframework.common.asm.ClassWriter;
 import org.jackframework.common.asm.MethodVisitor;
 import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.exceptions.RunningException;
-import org.jackframework.common.exceptions.WrappedRunningException;
+import org.jackframework.common.exceptions.WrappedException;
 import org.jackframework.common.reflect.AsmTools;
 
 import java.lang.reflect.Type;
@@ -88,7 +88,7 @@ public abstract class FastArgumentsBean {
         try {
             return (Class<? extends FastArgumentsBean>) CaptainTools.loadByteCodes(className, cw.toByteArray());
         } catch (Throwable e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         }
     }
 

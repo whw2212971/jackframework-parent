@@ -5,7 +5,7 @@ import org.jackframework.common.asm.ClassWriter;
 import org.jackframework.common.asm.MethodVisitor;
 import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.asm.Type;
-import org.jackframework.common.exceptions.WrappedRunningException;
+import org.jackframework.common.exceptions.WrappedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public abstract class FastMethod {
         try {
             return getFastMethod(type.getMethod(methodName, paramTypes));
         } catch (NoSuchMethodException e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         }
     }
 
@@ -76,7 +76,7 @@ public abstract class FastMethod {
                     try {
                         return method.invoke(invoker, args);
                     } catch (Throwable e) {
-                        throw new WrappedRunningException(e);
+                        throw new WrappedException(e);
                     }
                 }
             };
@@ -150,7 +150,7 @@ public abstract class FastMethod {
                     .loadByteCodes(className, cw.toByteArray())
                     .getConstructor(Method.class).newInstance(method);
         } catch (Throwable e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         }
     }
 

@@ -1,7 +1,7 @@
 package org.jackframework.common;
 
 import org.jackframework.common.exceptions.RunningException;
-import org.jackframework.common.exceptions.WrappedRunningException;
+import org.jackframework.common.exceptions.WrappedException;
 
 import java.io.*;
 import java.lang.ref.SoftReference;
@@ -257,7 +257,7 @@ public abstract class CaptainTools {
                 return Byte.class.getMethod("byteValue");
             }
         } catch (NoSuchMethodException e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         }
         throw new RunningException("It's not a primitive class: {}", primitiveClass.getName());
     }
@@ -282,7 +282,7 @@ public abstract class CaptainTools {
                 return Byte.class.getMethod("valueOf", byte.class);
             }
         } catch (NoSuchMethodException e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         }
         throw new RunningException("It's not a primitive class: {}", primitiveClass.getName());
     }
@@ -317,7 +317,7 @@ public abstract class CaptainTools {
                 return Class.forName(cbuf.append('L')
                         .append(getTypeClass(componentType).getName()).append(';').closeToString());
             } catch (ClassNotFoundException e) {
-                throw new WrappedRunningException(e);
+                throw new WrappedException(e);
             }
         }
         throw new RunningException("Could not convert the type to class: {}.", type);
@@ -413,7 +413,7 @@ public abstract class CaptainTools {
             }
             return new String(buffer, 0, size);
         } catch (IOException e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         } finally {
             close(reader);
             recycleBuffer(buffer);
@@ -689,7 +689,7 @@ public abstract class CaptainTools {
         try {
             return toString(in, charset);
         } catch (Throwable e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         } finally {
             close(in);
         }

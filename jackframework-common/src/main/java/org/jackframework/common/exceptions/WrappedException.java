@@ -1,12 +1,11 @@
-package org.jackframework.service.component;
+package org.jackframework.common.exceptions;
 
-import javax.servlet.ServletException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-class ServiceServletException extends ServletException {
+public class WrappedException extends RuntimeException {
 
-    public ServiceServletException(Throwable cause) {
+    public WrappedException(Throwable cause) {
         super(cause);
     }
 

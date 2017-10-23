@@ -6,7 +6,7 @@ import org.jackframework.common.asm.MethodVisitor;
 import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.asm.Type;
 import org.jackframework.common.exceptions.RunningException;
-import org.jackframework.common.exceptions.WrappedRunningException;
+import org.jackframework.common.exceptions.WrappedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public abstract class FastField {
         try {
             return getFastField(clazz.getField(fieldName));
         } catch (NoSuchFieldException e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         }
     }
 
@@ -181,7 +181,7 @@ public abstract class FastField {
                     .getConstructor(Field.class)
                     .newInstance(field);
         } catch (Throwable e) {
-            throw new WrappedRunningException(e);
+            throw new WrappedException(e);
         }
     }
 

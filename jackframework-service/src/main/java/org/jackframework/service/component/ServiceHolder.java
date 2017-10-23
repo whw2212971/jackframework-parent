@@ -1,7 +1,7 @@
 package org.jackframework.service.component;
 
 import org.jackframework.common.exceptions.RunningException;
-import org.jackframework.common.exceptions.WrappedRunningException;
+import org.jackframework.common.exceptions.WrappedException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -59,7 +59,7 @@ public class ServiceHolder {
             try {
                 return currentSession = new ServiceSession(session, this);
             } catch (Throwable e) {
-                throw new WrappedRunningException(e);
+                throw new WrappedException(e);
             }
         }
 
