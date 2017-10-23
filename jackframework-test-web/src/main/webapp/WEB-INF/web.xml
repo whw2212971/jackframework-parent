@@ -40,7 +40,17 @@
     </filter>
     <filter-mapping>
         <filter-name>springSessionRepositoryFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>*</url-pattern>
+    </filter-mapping>
+
+    <!-- Service Session -->
+    <filter>
+        <filter-name>serviceSessionFilter</filter-name>
+        <filter-class>org.jackframework.service.component.ServiceSessionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>serviceSessionFilter</filter-name>
+        <url-pattern>*</url-pattern>
     </filter-mapping>
 
     <!-- SpringMVC分发器 -->

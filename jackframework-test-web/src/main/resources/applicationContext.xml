@@ -1,19 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
 
+    <!-- 加载application.properties -->
     <context:property-placeholder location="classpath:application.properties"/>
+
+    <bean id="sessionRepository" class="org.springframework.session.MapSessionRepository">
+        <property name="defaultMaxInactiveInterval" value="1800"/>
+    </bean>
 
     <!-- Session（内存） -->
     <bean id="springSessionRepositoryFilter" class="org.springframework.session.web.http.SessionRepositoryFilter">
-        <constructor-arg>
-            <bean class="org.springframework.session.MapSessionRepository">
-                <property name="defaultMaxInactiveInterval" value="1800"/>
-            </bean>
-        </constructor-arg>
+        <constructor-arg ref="sessionRepository"/>
     </bean>
 
     <!-- 只读数据源 -->
@@ -59,34 +66,31 @@
     </bean>
 
     <!-- 可写数据源 -->
-    <bean id="writeDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <property name="url" value="${dataSource.url}"/>
-        <property name="username" value="${dataSource.user}"/>
-        <property name="password" value="${dataSource.password}"/>
+    <bean id="writeDataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+        <property name="targetDataSource">
+            <bean class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+                <property name="url" value="${dataSource.url}"/>
+                <property name="username" value="${dataSource.user}"/>
+                <property name="password" value="${dataSource.password}"/>
 
-        <property name="maxActive" value="${dataSource.maxActive}"/>
-        <property name="initialSize" value="${dataSource.initialSize}"/>
-        <property name="maxWait" value="${dataSource.maxWait}"/>
-        <property name="minIdle" value="${dataSource.minIdle}"/>
+                <property name="maxActive" value="${dataSource.maxActive}"/>
+                <property name="initialSize" value="${dataSource.initialSize}"/>
+                <property name="maxWait" value="${dataSource.maxWait}"/>
+                <property name="minIdle" value="${dataSource.minIdle}"/>
 
-        <property name="timeBetweenEvictionRunsMillis" value="${dataSource.timeBetweenEvictionRunsMillis}"/>
-        <property name="minEvictableIdleTimeMillis" value="${dataSource.minEvictableIdleTimeMillis}"/>
+                <property name="timeBetweenEvictionRunsMillis" value="${dataSource.timeBetweenEvictionRunsMillis}"/>
+                <property name="minEvictableIdleTimeMillis" value="${dataSource.minEvictableIdleTimeMillis}"/>
 
-        <property name="testWhileIdle" value="${dataSource.testWhileIdle}"/>
-        <property name="testOnBorrow" value="${dataSource.testOnBorrow}"/>
-        <property name="testOnReturn" value="${dataSource.testOnReturn}"/>
+                <property name="testWhileIdle" value="${dataSource.testWhileIdle}"/>
+                <property name="testOnBorrow" value="${dataSource.testOnBorrow}"/>
+                <property name="testOnReturn" value="${dataSource.testOnReturn}"/>
 
-        <property name="poolPreparedStatements" value="${dataSource.poolPreparedStatements}"/>
-        <property name="maxOpenPreparedStatements" value="${dataSource.maxOpenPreparedStatements}"/>
+                <property name="poolPreparedStatements" value="${dataSource.poolPreparedStatements}"/>
+                <property name="maxOpenPreparedStatements" value="${dataSource.maxOpenPreparedStatements}"/>
 
-        <property name="asyncInit" value="${dataSource.asyncInit}"/>
-    </bean>
-
-    <!-- 读写分离数据源 -->
-    <bean id="dataSource" class="org.jackframework.jdbc.spring.ReadWriteSplittingDataSource" primary="true">
-        <property name="transactionManager" ref="txManager"/>
-        <property name="readDataSource" ref="readDataSource"/>
-        <property name="writeDataSource" ref="writeDataSource"/>
+                <property name="asyncInit" value="${dataSource.asyncInit}"/>
+            </bean>
+        </property>
     </bean>
 
     <!-- 读写分离事务管理 -->
@@ -98,7 +102,14 @@
         </property>
     </bean>
 
-    <!-- 开启注解实事物 -->
+    <!-- 读写分离数据源 -->
+    <bean id="dataSource" class="org.jackframework.jdbc.spring.ReadWriteSplittingDataSource" primary="true">
+        <property name="transactionManager" ref="txManager"/>
+        <property name="readDataSource" ref="readDataSource"/>
+        <property name="writeDataSource" ref="writeDataSource"/>
+    </bean>
+
+    <!-- 开启注解式事物 -->
     <tx:annotation-driven transaction-manager="txManager"/>
 
     <!-- CommonDao -->

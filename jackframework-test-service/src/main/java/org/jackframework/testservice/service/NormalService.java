@@ -1,11 +1,13 @@
 package org.jackframework.testservice.service;
 
 import com.github.pagehelper.PageHelper;
+import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.jdbc.core.CommonDao;
 import org.jackframework.jdbc.core.Excludes;
 import org.jackframework.jdbc.core.Includes;
 import org.jackframework.service.annotation.EndService;
 import org.jackframework.service.annotation.Publish;
+import org.jackframework.service.component.ServiceSessionHolder;
 import org.jackframework.testservice.mapper.NormalMapper;
 import org.jackframework.testservice.pojo.TData;
 import org.serviceframework.component.Pagination;
@@ -185,6 +187,34 @@ public class NormalService {
     @Transactional
     public int deleteBetween(Date beginDate, Date endDate) {
         return commonDao.delete(TData.class, "data_datetime between ? and ?", beginDate, endDate);
+    }
+
+    /**
+     * 测试事物回滚
+     */
+    @Publish("/transactionRollback")
+    @Transactional
+    public void transactionRollback(Integer dataInt, Boolean rollback) {
+        commonDao.update(TData.class, "set data_int=?", dataInt);
+        if (rollback != null && rollback) {
+            throw new RunningException("Transaction is rollback.");
+        }
+    }
+
+    /**
+     * 设置Session值
+     */
+    @Publish("/setSession")
+    public void setSession(String name, String value) {
+        ServiceSessionHolder.getSession().setAttribute(name, value);
+    }
+
+    /**
+     * 获取Session值
+     */
+    @Publish("/getSession")
+    public Object setSession(String name) {
+        return ServiceSessionHolder.getSession().getAttribute(name);
     }
 
     protected TData createData(Long dataId, String dataString, Integer dataInt, BigDecimal dataDecimal,
