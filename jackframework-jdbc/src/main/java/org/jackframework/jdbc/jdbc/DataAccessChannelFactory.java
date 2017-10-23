@@ -52,7 +52,7 @@ public class DataAccessChannelFactory {
         return new DataAccessChannel(commonDaoConfig, classTable);
     }
 
-    protected Table createTable(String tableName) {
+    public Table createTable(String tableName) {
         Connection connection    = null;
         ResultSet  primaryKeySet = null;
         ResultSet  columnSet     = null;
@@ -106,7 +106,7 @@ public class DataAccessChannelFactory {
         }
     }
 
-    protected ClassTable createClassTable(Class<?> dataType, Table table) {
+    public ClassTable createClassTable(Class<?> dataType, Table table) {
         NameTranslator     nameTranslator = commonDaoConfig.getNameTranslator();
         Map<String, Field> fieldMap       = new HashMap<String, Field>();
         Field[]            fields         = dataType.getDeclaredFields();

@@ -5,74 +5,75 @@ import java.util.Date;
 
 public class TData {
 
-    protected Long dataId;
+    private Long dataId;
 
-    protected String dataString;
+    private String dataString;
 
-    protected Integer dataInt;
+    private Integer dataInt;
 
-    protected BigDecimal dataDecimal;
+    private BigDecimal dataDecimal;
 
-    protected Date dataDate;
+    private Date dataDate;
 
-    protected Date dataDatetime;
+    private Date dataDatetime;
 
-    protected Boolean dataBoolean;
-
-    public Long getDataId() {
-        return dataId;
-    }
+    private Boolean dataBoolean;
 
     public void setDataId(Long dataId) {
         this.dataId = dataId;
     }
 
-    public String getDataString() {
-        return dataString;
+    public Long getDataId() {
+        return dataId;
     }
 
     public void setDataString(String dataString) {
         this.dataString = dataString;
     }
 
-    public Integer getDataInt() {
-        return dataInt;
+    public String getDataString() {
+        return dataString;
     }
 
     public void setDataInt(Integer dataInt) {
         this.dataInt = dataInt;
     }
 
-    public BigDecimal getDataDecimal() {
-        return dataDecimal;
+    public Integer getDataInt() {
+        return dataInt;
     }
 
     public void setDataDecimal(BigDecimal dataDecimal) {
         this.dataDecimal = dataDecimal;
     }
 
-    public Date getDataDate() {
-        return dataDate;
+    public BigDecimal getDataDecimal() {
+        return dataDecimal;
     }
 
     public void setDataDate(Date dataDate) {
         this.dataDate = dataDate;
     }
 
-    public Date getDataDatetime() {
-        return dataDatetime;
+    public Date getDataDate() {
+        return dataDate;
     }
 
     public void setDataDatetime(Date dataDatetime) {
         this.dataDatetime = dataDatetime;
     }
 
-    public Boolean getDataBoolean() {
-        return dataBoolean;
+    public Date getDataDatetime() {
+        return dataDatetime;
     }
 
     public void setDataBoolean(Boolean dataBoolean) {
         this.dataBoolean = dataBoolean;
     }
+
+    public Boolean getDataBoolean() {
+        return dataBoolean;
+    }
+
 
 }
