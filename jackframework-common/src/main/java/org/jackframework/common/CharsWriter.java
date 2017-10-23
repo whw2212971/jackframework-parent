@@ -30,6 +30,9 @@ public class CharsWriter extends Writer {
 
     @Override
     public void write(char[] cbuf) {
+        if (cbuf == null) {
+            return;
+        }
         write(cbuf, 0, cbuf.length);
     }
 
@@ -45,6 +48,9 @@ public class CharsWriter extends Writer {
 
     @Override
     public void write(String str) {
+        if (str == null) {
+            str = "null";
+        }
         write(str, 0, str.length());
     }
 
@@ -80,6 +86,9 @@ public class CharsWriter extends Writer {
     }
 
     public void write(Reader reader, int bufferSize) throws IOException {
+        if (reader == null) {
+            return;
+        }
         int minCapacity = size + bufferSize, len;
         if (minCapacity > buffer.length) {
             buffer = CaptainTools.growCapacity(buffer, minCapacity);
@@ -106,10 +115,16 @@ public class CharsWriter extends Writer {
     }
 
     public void write(InputStream in, Charset charset, int bufferSize) throws IOException {
+        if (in == null) {
+            return;
+        }
         write(new InputStreamReader(in, charset), bufferSize);
     }
 
     public void write(InputStream in, CharsetDecoder decoder, int bufferSize) throws IOException {
+        if (in == null) {
+            return;
+        }
         write(new InputStreamReader(in, decoder), bufferSize);
     }
 
@@ -117,11 +132,11 @@ public class CharsWriter extends Writer {
         write(String.valueOf(object));
     }
 
-    public void writeSkipNull(Object obj) {
-        if (obj == null) {
+    public void writeSkipNull(Object object) {
+        if (object == null) {
             return;
         }
-        write(obj.toString());
+        write(object.toString());
     }
 
     public void writeSubstring(String str, int start, int end) {

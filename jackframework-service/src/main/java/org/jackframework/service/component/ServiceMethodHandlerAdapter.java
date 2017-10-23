@@ -1,8 +1,6 @@
 package org.jackframework.service.component;
 
-import org.jackframework.service.converter.FastjsonTypeConverterFactory;
-import org.jackframework.service.converter.ServiceTypeConverter;
-import org.jackframework.service.converter.ServiceTypeConverterFactory;
+import org.jackframework.common.exceptions.WrappedRunningException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -41,36 +39,35 @@ public class ServiceMethodHandlerAdapter implements HandlerAdapter, ApplicationC
     @Override
     public ModelAndView handle(
             HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        ServiceMethodHandler serviceHandler = (ServiceMethodHandler) handler;
-        ServiceTypeConverter typeConverter  = converterCache.get(serviceHandler);
-        if (typeConverter == null) {
-            synchronized (this) {
-                typeConverter = converterCache.get(serviceHandler);
-                if (typeConverter == null) {
-                    typeConverter = typeConverterFactory.createServiceTypeConverter(serviceHandler);
-                    converterCache.put(serviceHandler, typeConverter);
+        try {
+            ServiceMethodHandler serviceHandler = (ServiceMethodHandler) handler;
+            ServiceTypeConverter typeConverter  = converterCache.get(serviceHandler);
+            if (typeConverter == null) {
+                synchronized (this) {
+                    typeConverter = converterCache.get(serviceHandler);
+                    if (typeConverter == null) {
+                        typeConverter = typeConverterFactory.createServiceTypeConverter(serviceHandler);
+                        converterCache.put(serviceHandler, typeConverter);
+                    }
                 }
             }
-        }
 
-        checkRequest(request);
+            checkRequest(request);
 
-        HttpProcessContext processContext = new HttpProcessContext();
-        processContext.setRequest(request);
-        processContext.setResponse(response);
+            HttpProcessContext processContext = new HttpProcessContext();
+            processContext.setRequest(request);
+            processContext.setResponse(response);
 
-        Object[] arguments;
-        try {
-            arguments = typeConverter.convertArguments(processContext);
+            Object[] arguments;
+            try {
+                arguments = typeConverter.convertArguments(processContext);
+            } catch (Throwable e) {
+                throw new ServiceException(ServiceErrorCodes.INVALID_PARAM, e, "Invalid param");
+            }
+
+            typeConverter.resolveResult(processContext, serviceHandler.invoke(arguments));
         } catch (Throwable e) {
-            throw new ParameterTypeConvertException(e);
-        }
-
-        Object result = serviceHandler.invoke(arguments);
-        try {
-            typeConverter.resolveResult(processContext, result);
-        } catch (Throwable e) {
-            throw new ResultTypeConvertException(e);
+            throw new WrappedRunningException(e);
         }
 
         return null;

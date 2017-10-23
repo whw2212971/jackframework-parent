@@ -1,4 +1,4 @@
-package org.jackframework.service.converter;
+package org.jackframework.service.component;
 
 import org.jackframework.common.CaptainTools;
 import org.jackframework.common.asm.ClassWriter;
@@ -7,7 +7,6 @@ import org.jackframework.common.asm.Opcodes;
 import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.common.exceptions.WrappedRunningException;
 import org.jackframework.common.reflect.AsmTools;
-import org.jackframework.service.component.ServiceMethodHandler;
 
 import java.lang.reflect.Type;
 

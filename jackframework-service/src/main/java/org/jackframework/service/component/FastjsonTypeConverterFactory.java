@@ -1,9 +1,8 @@
-package org.jackframework.service.converter;
+package org.jackframework.service.component;
 
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.jackframework.service.component.ServiceMethodHandler;
 
 public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory {
 

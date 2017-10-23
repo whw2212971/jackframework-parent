@@ -7,8 +7,11 @@ public class ServiceSession {
 
     protected HttpSession session;
 
-    public ServiceSession(HttpSession session) {
+    protected ServiceHolder.RequestLocal requestLocal;
+
+    public ServiceSession(HttpSession session, ServiceHolder.RequestLocal requestLocal) {
         this.session = session;
+        this.requestLocal = requestLocal;
     }
 
     public long getCreationTime() {
@@ -49,6 +52,7 @@ public class ServiceSession {
 
     public void invalidate() {
         session.invalidate();
+        requestLocal.removeCurrentSession();
     }
 
     public boolean isNew() {

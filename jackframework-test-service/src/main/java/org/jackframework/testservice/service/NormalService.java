@@ -1,13 +1,13 @@
 package org.jackframework.testservice.service;
 
 import com.github.pagehelper.PageHelper;
-import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.jdbc.core.CommonDao;
 import org.jackframework.jdbc.core.Excludes;
 import org.jackframework.jdbc.core.Includes;
 import org.jackframework.service.annotation.EndService;
 import org.jackframework.service.annotation.Publish;
-import org.jackframework.service.component.ServiceSessionHolder;
+import org.jackframework.service.component.ServiceException;
+import org.jackframework.service.component.ServiceHolder;
 import org.jackframework.testservice.mapper.NormalMapper;
 import org.jackframework.testservice.pojo.TData;
 import org.serviceframework.component.Pagination;
@@ -194,10 +194,10 @@ public class NormalService {
      */
     @Publish("/transactionRollback")
     @Transactional
-    public void transactionRollback(Integer dataInt, Boolean rollback) {
+    public void transactionRollback(Integer dataInt, Boolean rollback) throws ServiceException {
         commonDao.update(TData.class, "set data_int=?", dataInt);
         if (rollback != null && rollback) {
-            throw new RunningException("Transaction is rollback.");
+            throw new RuntimeException("Transaction is rollback.");
         }
     }
 
@@ -206,7 +206,7 @@ public class NormalService {
      */
     @Publish("/setSession")
     public void setSession(String name, String value) {
-        ServiceSessionHolder.getSession().setAttribute(name, value);
+        ServiceHolder.getSession().setAttribute(name, value);
     }
 
     /**
@@ -214,7 +214,7 @@ public class NormalService {
      */
     @Publish("/getSession")
     public Object setSession(String name) {
-        return ServiceSessionHolder.getSession().getAttribute(name);
+        return ServiceHolder.getSession().getAttribute(name);
     }
 
     protected TData createData(Long dataId, String dataString, Integer dataInt, BigDecimal dataDecimal,

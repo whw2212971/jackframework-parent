@@ -1,7 +1,6 @@
-package org.jackframework.service.converter;
+package org.jackframework.service.component;
 
 import com.alibaba.fastjson.JSONObject;
-import org.jackframework.service.component.HttpProcessContext;
 
 public class FastjsonResultWrapper implements ResultWrapper {
 
