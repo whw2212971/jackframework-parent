@@ -23,6 +23,13 @@
         <constructor-arg ref="sessionRepository"/>
     </bean>
 
+    <bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">
+        <property name="connectionLogEnabled" value="false"/>
+        <property name="statementLogEnabled" value="false"/>
+        <property name="resultSetLogEnabled" value="true"/>
+        <property name="statementExecutableSqlLogEnable" value="true"/>
+    </bean>
+
     <!-- 只读数据源 -->
     <bean id="readDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="url" value="${dataSource.url}"/>
@@ -48,6 +55,7 @@
 
         <property name="proxyFilters">
             <list>
+                <ref bean="logFilter"/>
                 <bean class="com.alibaba.druid.wall.WallFilter">
                     <property name="dbType" value="mysql"/>
                     <property name="config">
@@ -89,6 +97,12 @@
                 <property name="maxOpenPreparedStatements" value="${dataSource.maxOpenPreparedStatements}"/>
 
                 <property name="asyncInit" value="${dataSource.asyncInit}"/>
+
+                <property name="proxyFilters">
+                    <list>
+                        <ref bean="logFilter"/>
+                    </list>
+                </property>
             </bean>
         </property>
     </bean>

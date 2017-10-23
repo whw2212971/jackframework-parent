@@ -10,6 +10,7 @@ import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
@@ -65,6 +66,8 @@ public class ServiceMethodHandlerAdapter implements HandlerAdapter, ApplicationC
             }
 
             typeConverter.resolveResult(processContext, serviceHandler.invoke(arguments));
+        } catch (ServletException e) {
+            throw e;
         } catch (Throwable e) {
             throw new ServiceServletException(e);
         }

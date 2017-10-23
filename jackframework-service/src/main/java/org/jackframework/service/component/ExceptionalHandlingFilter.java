@@ -38,20 +38,20 @@ public class ExceptionalHandlingFilter implements Filter {
     }
 
     protected void handleException(
-            HttpServletRequest request, HttpServletResponse response, Throwable e) throws ServiceServletException {
+            HttpServletRequest request, HttpServletResponse response, Throwable exception) throws ServiceServletException {
         boolean     logged = false;
         PrintWriter out    = null;
         try {
-            if (e instanceof ServiceServletException) {
-                e = ((ServiceServletException) e).getRealCause();
+            if (exception instanceof ServiceServletException) {
+                exception = ((ServiceServletException) exception).getRealCause();
             }
 
             ServiceException serviceException = null;
-            if (e instanceof ServiceException) {
-                serviceException = (ServiceException) e;
-                LOGGER.error("Service exception", e);
+            if (exception instanceof ServiceException) {
+                serviceException = (ServiceException) exception;
+                LOGGER.error("Service exception", exception);
             } else {
-                LOGGER.error("Internal server error{}", getRequestContent(request), e);
+                LOGGER.error("Internal server error{}", getRequestContent(request), exception);
             }
 
             logged = true;
@@ -60,39 +60,42 @@ public class ExceptionalHandlingFilter implements Filter {
                 return;
             }
 
-            String accept = request.getHeader("Accept");
-            if (accept != null && accept.contains("html")) {
-                request.setAttribute("exception", e);
-                response.setStatus(500);
-                if (errorPage != null) {
-                    request.getRequestDispatcher(errorPage).forward(request, response);
-                    return;
+            String contentType = request.getContentType();
+            String accept      = request.getHeader("Accept");
+            if ((contentType != null && contentType.contains("json")) ||
+                    (accept != null && accept.contains("json"))) {
+                int    errorCode;
+                String errorMessage;
+                if (serviceException == null) {
+                    errorCode = ServiceErrorCodes.INTERNAL_ERROR;
+                    errorMessage = "Internal server error";
+                } else {
+                    errorCode = serviceException.getErrorCode();
+                    errorMessage = serviceException.getMessage();
                 }
-                throw new ServiceServletException(e);
+
+                LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>();
+                result.put("errorCode", errorCode);
+                result.put("errorMessage", errorMessage);
+
+                JSON.writeJSONString(out = response.getWriter(), result);
             }
 
-            int    errorCode;
-            String errorMessage;
-            if (serviceException == null) {
-                errorCode = ServiceErrorCodes.INTERNAL_ERROR;
-                errorMessage = "Internal server error";
-            } else {
-                errorCode = serviceException.getErrorCode();
-                errorMessage = serviceException.getMessage();
+            if (errorPage != null) {
+                response.setStatus(500);
+                request.setAttribute("exception", exception);
+                request.getRequestDispatcher(errorPage).forward(request, response);
+                return;
             }
 
-            LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>();
-            result.put("errorCode", errorCode);
-            result.put("errorMessage", errorMessage);
-
-            JSON.writeJSONString(out = response.getWriter(), result);
+            throw new ServiceServletException(exception);
         } catch (ServiceServletException wrap) {
             throw wrap;
-        } catch (Throwable ex) {
+        } catch (Throwable other) {
             if (!logged) {
-                LOGGER.error("Internal server error.", e);
+                LOGGER.error("Internal server error.", exception);
             }
-            LOGGER.error("Handle exception error.", ex);
+            LOGGER.error("Handle exception error.", other);
         } finally {
             CaptainTools.close(out);
         }
