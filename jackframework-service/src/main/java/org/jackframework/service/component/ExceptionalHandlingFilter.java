@@ -43,7 +43,7 @@ public class ExceptionalHandlingFilter implements Filter {
         PrintWriter out    = null;
         try {
             if (e instanceof ServiceServletException) {
-                e = e.getCause();
+                e = ((ServiceServletException) e).getRealCause();
             }
 
             ServiceException serviceException = null;

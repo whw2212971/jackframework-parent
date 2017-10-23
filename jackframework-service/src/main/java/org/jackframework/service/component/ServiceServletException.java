@@ -10,6 +10,10 @@ class ServiceServletException extends ServletException {
         super(cause);
     }
 
+    public Throwable getRealCause() {
+        return super.getCause();
+    }
+
     @Override
     public String getMessage() {
         return super.getCause().getMessage();
