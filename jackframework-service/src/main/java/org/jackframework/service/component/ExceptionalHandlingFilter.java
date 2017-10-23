@@ -42,10 +42,14 @@ public class ExceptionalHandlingFilter implements Filter {
         boolean     logged = false;
         PrintWriter out    = null;
         try {
+            if (e instanceof ServiceServletException) {
+                e = e.getCause();
+            }
+
             ServiceException serviceException = null;
             if (e instanceof ServiceException) {
                 serviceException = (ServiceException) e;
-                LOGGER.error("Service exception", serviceException);
+                LOGGER.error("Service exception", e);
             } else {
                 LOGGER.error("Internal server error{}", getRequestContent(request), e);
             }
