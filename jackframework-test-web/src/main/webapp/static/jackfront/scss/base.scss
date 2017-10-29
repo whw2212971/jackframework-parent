@@ -59,18 +59,21 @@ $z-index-hidden-cover: 5 !default;
 }
 
 // Placeholder text
-@mixin placeholder($color: $color-black4) {
+@mixin placeholder($color: $color-black4, $line-height: $line-height-proportion) {
   // Firefox
   &::-moz-placeholder {
+    line-height: $line-height;
     color: $color;
     opacity: 1; // Override Firefox's unusual default opacity; see https://github.com/twbs/bootstrap/pull/11526
   }
   // Internet Explorer 10+
   &:-ms-input-placeholder {
+    line-height: $line-height;
     color: $color;
   }
   // Safari and Chrome
   &::-webkit-input-placeholder {
+    line-height: $line-height;
     color: $color;
   }
 }
@@ -213,6 +216,7 @@ $z-index-hidden-cover: 5 !default;
 
 %hidden-cover {
   @include opacity(0);
+  display: block;
   position: absolute;
   top: 0;
   left: 0;

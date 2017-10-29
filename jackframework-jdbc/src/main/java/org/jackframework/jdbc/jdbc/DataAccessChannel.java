@@ -150,6 +150,18 @@ public class DataAccessChannel {
         return findByWhere(whereClause, statementArgs, buildSelectedColumns(excludes), resultHandler);
     }
 
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public InsertChannel getInsertChannel() {
+        return insertChannel;
+    }
+
+    public ClassTable getClassTable() {
+        return classTable;
+    }
+
     public ResultHandler getUniqueResultHandler() {
         return uniqueResultHandler;
     }

@@ -21,7 +21,6 @@
     <!-- Session（内存） -->
     <bean id="springSessionRepositoryFilter" class="org.springframework.session.web.http.SessionRepositoryFilter">
         <constructor-arg ref="sessionRepository"/>
-        <property name="httpSessionStrategy" value="1"/>
     </bean>
 
     <bean id="logFilter" class="com.alibaba.druid.filter.logging.Slf4jLogFilter">

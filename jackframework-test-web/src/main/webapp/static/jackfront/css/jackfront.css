@@ -8,6 +8,7 @@
 .form-select > select {
   opacity: 0;
   filter: alpha(opacity=0);
+  display: block;
   position: absolute;
   top: 0;
   left: 0;
@@ -23,6 +24,7 @@
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  -webkit-appearance: none;
 }
 
 * {
@@ -37,9 +39,10 @@ body {
   color: #333;
 }
 
-input, textarea {
+button, input, select, textarea {
   font-family: inherit;
   font-size: inherit;
+  line-height: inherit;
   color: inherit;
 }
 
@@ -97,13 +100,16 @@ input, textarea {
 }
 
 .form-control::-moz-placeholder {
+  line-height: 1.4285714286;
   color: #ccc;
   opacity: 1;
 }
 .form-control:-ms-input-placeholder {
+  line-height: 1.4285714286;
   color: #ccc;
 }
 .form-control::-webkit-input-placeholder {
+  line-height: 1.4285714286;
   color: #ccc;
 }
 

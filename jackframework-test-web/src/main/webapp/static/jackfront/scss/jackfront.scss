@@ -6,6 +6,7 @@
  **********************************************************************************/
 *, *:before, *:after {
   @include box-sizing(border-box);
+  -webkit-appearance: none;
 }
 
 * {
@@ -20,9 +21,10 @@ body {
   color: $color-base;
 }
 
-input, textarea {
+button, input, select, textarea {
   font-family: inherit;
   font-size: inherit;
+  line-height: inherit;
   color: inherit;
 }
 
@@ -127,8 +129,8 @@ textarea.form-control {
     @extend %form-control-disabled;
   }
   & > select {
-    cursor: pointer;
     @extend %hidden-cover;
+    cursor: pointer;
   }
   &.disabled > select {
     cursor: not-allowed;

@@ -18,7 +18,6 @@
         <module>jackframework-test-web</module>
     </modules>
 
-    <name>Jack Framework</name>
     <description>A full stack framework</description>
     <url>http://www.github.com/jackframework</url>
     <inceptionYear>2017</inceptionYear>

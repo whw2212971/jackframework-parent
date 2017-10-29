@@ -7,6 +7,7 @@
     function jackControlsInit(rootElement) {
         var $root = $(rootElement);
 
+        // Form Select Control
         $root.find('.form-select>select').each(function () {
             var $select = $(this);
             var $parent = $select.parent();

@@ -327,16 +327,8 @@ public abstract class CaptainTools {
         return object == null || object.toString().isEmpty();
     }
 
-    public static boolean isEmpty(Collection<?> collection) {
-        return collection == null || collection.isEmpty();
-    }
-
     public static boolean isNotEmpty(Object object) {
         return !isEmpty(object);
-    }
-
-    public static boolean isNotEmpty(Collection<?> collection) {
-        return !isEmpty(collection);
     }
 
     public static boolean isBlank(Object object) {
@@ -354,6 +346,10 @@ public abstract class CaptainTools {
 
     public static boolean isNotBlank(Object object) {
         return !isBlank(object);
+    }
+
+    public static boolean hasSize(Collection<?> collection) {
+        return collection == null || collection.size() > 0;
     }
 
     public static void assertNotNull(Object object, String message, Object... args) {
