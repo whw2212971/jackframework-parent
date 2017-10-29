@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 
 public abstract class CaptainTools {
 
@@ -458,11 +459,7 @@ public abstract class CaptainTools {
     }
 
     public static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            throw new WrappedException(e);
-        }
+        LockSupport.parkNanos(millis);
     }
 
     public static <T> T[] growCapacity(T[] array, int minCapacity) {
