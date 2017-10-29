@@ -457,6 +457,14 @@ public abstract class CaptainTools {
         }
     }
 
+    public static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new WrappedException(e);
+        }
+    }
+
     public static <T> T[] growCapacity(T[] array, int minCapacity) {
         return Arrays.copyOf(array, newCapacity(array.length, minCapacity));
     }
