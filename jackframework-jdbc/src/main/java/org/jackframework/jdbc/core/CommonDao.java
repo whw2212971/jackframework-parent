@@ -4,6 +4,7 @@ import org.jackframework.common.CaptainTools;
 import org.jackframework.jdbc.jdbc.DataAccessChannel;
 import org.jackframework.jdbc.jdbc.DataAccessChannelFactory;
 import org.jackframework.jdbc.jdbc.ResultHandlers;
+import org.jackframework.jdbc.orm.ClassTable;
 
 import java.util.*;
 
@@ -293,6 +294,10 @@ public class CommonDao {
 
     public DataAccessChannel getDataAccessChannel(Class<?> dataType) {
         return dataAccessChannelFactory.getDataAccessChannel(dataType);
+    }
+
+    public ClassTable getClassTable(Class<?> dataType) {
+        return dataAccessChannelFactory.getDataAccessChannel(dataType).getClassTable();
     }
 
     public CommonDaoConfig getCommonDaoConfig() {
