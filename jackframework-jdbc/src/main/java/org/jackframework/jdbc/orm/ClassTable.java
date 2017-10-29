@@ -36,6 +36,10 @@ public class ClassTable {
         return fieldColumns.length;
     }
 
+    public FieldColumn getPrimaryFieldColumn() {
+        return fieldColumns[0];
+    }
+
     public FieldColumn getFieldColumn(int index) {
         return fieldColumns[index];
     }
