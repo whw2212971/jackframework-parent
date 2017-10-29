@@ -11,6 +11,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
@@ -459,7 +460,7 @@ public abstract class CaptainTools {
     }
 
     public static void sleep(long millis) {
-        LockSupport.parkNanos(millis);
+        LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(millis));
     }
 
     public static <T> T[] growCapacity(T[] array, int minCapacity) {
