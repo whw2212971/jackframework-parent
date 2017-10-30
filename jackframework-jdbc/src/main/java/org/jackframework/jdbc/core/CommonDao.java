@@ -297,7 +297,7 @@ public class CommonDao {
     }
 
     public ClassTable getClassTable(Class<?> dataType) {
-        return dataAccessChannelFactory.getDataAccessChannel(dataType).getClassTable();
+        return getDataAccessChannel(dataType).getClassTable();
     }
 
     public CommonDaoConfig getCommonDaoConfig() {
