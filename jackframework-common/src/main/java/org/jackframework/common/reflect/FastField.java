@@ -64,6 +64,7 @@ public abstract class FastField {
     public static FastField createFastField(Field field) {
         if (!CaptainTools.isPublic(field)) {
             LOGGER.warn("It's not a completely public field, implements with reflect: {}", field.toGenericString());
+            field.setAccessible(true);
             if (Modifier.isFinal(field.getModifiers())) {
                 return new FastField(field) {
                     @Override

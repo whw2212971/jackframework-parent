@@ -70,6 +70,7 @@ public abstract class FastMethod {
     protected static FastMethod createFastMethod(Method method) {
         if (!CaptainTools.isPublic(method)) {
             LOGGER.warn("It's not a completely public method, implements with reflect: {}", method.toGenericString());
+            method.setAccessible(true);
             return new FastMethod(method) {
                 @Override
                 public Object invoke(Object invoker, Object... args) {

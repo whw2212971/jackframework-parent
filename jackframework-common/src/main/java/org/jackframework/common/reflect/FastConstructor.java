@@ -74,6 +74,7 @@ public abstract class FastConstructor<T> {
             LOGGER.warn(
                     "It's not a completely public constructor, implements with reflect: {}",
                     constructor.toGenericString());
+            constructor.setAccessible(true);
             return new FastConstructor<T>(constructor) {
                 @Override
                 public T newInstance(Object... args) {
