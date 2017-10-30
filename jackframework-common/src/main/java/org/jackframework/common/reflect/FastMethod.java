@@ -52,7 +52,7 @@ public abstract class FastMethod {
 
     public static FastMethod getFastMethod(Class<?> type, String methodName, Class<?>... paramTypes) {
         try {
-            return getFastMethod(type.getMethod(methodName, paramTypes));
+            return getFastMethod(type.getDeclaredMethod(methodName, paramTypes));
         } catch (NoSuchMethodException e) {
             throw new WrappedException(e);
         }

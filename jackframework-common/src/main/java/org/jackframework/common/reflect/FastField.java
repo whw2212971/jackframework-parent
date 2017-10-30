@@ -46,7 +46,7 @@ public abstract class FastField {
 
     public static FastField getFastField(Class<?> clazz, String fieldName) {
         try {
-            return getFastField(clazz.getField(fieldName));
+            return getFastField(clazz.getDeclaredField(fieldName));
         } catch (NoSuchFieldException e) {
             throw new WrappedException(e);
         }

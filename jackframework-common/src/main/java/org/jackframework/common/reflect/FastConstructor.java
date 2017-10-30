@@ -55,7 +55,7 @@ public abstract class FastConstructor<T> {
 
     public static <T> FastConstructor<T> getFastConstructor(Class<T> type, Class<?>... paramTypes) {
         try {
-            return getFastConstructor(type.getConstructor(paramTypes));
+            return getFastConstructor(type.getDeclaredConstructor(paramTypes));
         } catch (NoSuchMethodException e) {
             throw new WrappedException(e);
         }
