@@ -16,9 +16,9 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 
-public class ExceptionalHandlingFilter implements Filter {
+public class ExceptionHandleFilter implements Filter {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(ExceptionalHandlingFilter.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandleFilter.class);
 
     protected String errorPage;
 

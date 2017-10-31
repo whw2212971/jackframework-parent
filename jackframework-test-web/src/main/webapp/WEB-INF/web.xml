@@ -18,7 +18,7 @@
     <!-- 异常处理 -->
     <filter>
         <filter-name>exceptionalHandlingFilter</filter-name>
-        <filter-class>org.jackframework.service.component.ExceptionalHandlingFilter</filter-class>
+        <filter-class>org.jackframework.service.component.ExceptionHandleFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>exceptionalHandlingFilter</filter-name>
