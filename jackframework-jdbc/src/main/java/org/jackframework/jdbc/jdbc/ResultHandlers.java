@@ -16,7 +16,8 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class ResultHandlers {
 
-    protected static final FieldResultHandler FIELD_RESULT_HANDLER = new FieldResultHandler();
+    protected static final FieldResultHandler     FIELD_RESULT_HANDLER      = new FieldResultHandler();
+    protected static final FieldListResultHandler FIELD_LIST_RESULT_HANDLER = new FieldListResultHandler();
 
     public static final MapResultHandler     MAP_RESULT_HANDLER      = new MapResultHandler();
     public static final MapListResultHandler MAP_LIST_RESULT_HANDLER = new MapListResultHandler();
@@ -31,6 +32,10 @@ public class ResultHandlers {
 
     public static <T> ResultHandler<T> getFieldHandler() {
         return FIELD_RESULT_HANDLER;
+    }
+
+    public static <T> ResultHandler<List<T>> getFieldListHandler() {
+        return FIELD_LIST_RESULT_HANDLER;
     }
 
     public static class UniqueResultHandler<T> implements ResultHandler<T> {
@@ -93,6 +98,19 @@ public class ResultHandlers {
             return null;
         }
 
+    }
+
+    public static class FieldListResultHandler<T> implements ResultHandler<List<T>> {
+
+        @Override
+        public List<T> handleResult(QueryContext<List<T>> queryContext) throws SQLException {
+            ResultSet resultSet = queryContext.getResultSet();
+            List<T>   result    = new ArrayList<T>();
+            if (resultSet.next()) {
+                result.add((T) queryContext.getSelectedColumns().get(0).getResultValue(resultSet, 1));
+            }
+            return result;
+        }
     }
 
     public static class MapResultHandler implements ResultHandler<Map<String, Object>> {

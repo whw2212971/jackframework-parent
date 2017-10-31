@@ -179,6 +179,17 @@ public class CommonDao {
                 Includes.include(fieldName), whereClause, statementArgs, ResultHandlers.<T>getFieldHandler());
     }
 
+    public <T> List<T> findFieldList(
+            Class<?> dataType, String fieldName, String whereClause, Object... statementArgs) {
+        checkDataTypeParam(dataType);
+        checkFieldNameParam(fieldName);
+        if (CaptainTools.isBlank(whereClause)) {
+            return null;
+        }
+        return getDataAccessChannel(dataType).findByWhere(
+                Includes.include(fieldName), whereClause, statementArgs, ResultHandlers.<T>getFieldListHandler());
+    }
+
     public Map<String, Object> findMap(Class<?> dataType, Object id) {
         checkDataTypeParam(dataType);
         if (id == null) {
