@@ -30,11 +30,11 @@ public class ServiceHolder {
         return REQUEST_BODY_LOCAL.get();
     }
 
-    protected static void setRequestLocal(HttpServletRequest request) {
+    public static void setRequestLocal(HttpServletRequest request) {
         REQUEST_LOCAL.set(new RequestLocal(request));
     }
 
-    protected static void setRequestBody(String requestBody) {
+    public static void setRequestBody(String requestBody) {
         REQUEST_BODY_LOCAL.set(requestBody);
     }
 

@@ -37,8 +37,8 @@ public class ExceptionHandleFilter implements Filter {
         }
     }
 
-    protected void handleException(
-            HttpServletRequest request, HttpServletResponse response, Throwable exception) throws ServiceServletException {
+    protected void handleException(HttpServletRequest request,
+                                   HttpServletResponse response, Throwable exception) throws ServiceServletException {
         boolean     logged = false;
         PrintWriter out    = null;
         try {
