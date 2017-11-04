@@ -325,6 +325,17 @@ public abstract class CaptainTools {
         throw new RunningException("Could not convert the type to class: {}.", type);
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T> T getPrivateValue(Class<?> type, String fieldName, Object target) {
+        try {
+            Field field = type.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return (T) field.get(target);
+        } catch (Throwable e) {
+            throw new RunningException(e);
+        }
+    }
+
     public static boolean isEmpty(Object object) {
         return object == null || object.toString().isEmpty();
     }
