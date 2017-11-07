@@ -1,14 +1,15 @@
 package org.jackframework.jdbc.jdbc;
 
+import org.jackframework.common.CharsWriter;
 import org.jackframework.jdbc.core.CommonDaoException;
 
+import javax.sql.DataSource;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Date;
+import java.util.*;
 
 public class JdbcUtils {
 
@@ -155,6 +156,101 @@ public class JdbcUtils {
             throw new CommonDaoException("Could not get {} result from the jdbc result set.", type.getName());
         }
         return resultGetter;
+    }
+
+    public static <T> T executeQuery(QueryContext<T> queryContext) {
+        Connection        connection = null;
+        PreparedStatement statement  = null;
+        ResultSet         resultSet  = null;
+        DataSource        dataSource = queryContext.getDataSource();
+        try {
+            // Create database connection
+            connection = dataSource.getConnection();
+
+            // Prepare statement parameters
+            statement = connection.prepareStatement(queryContext.getSql());
+            JdbcUtils.prepareStatement(statement, queryContext.getStatementParams());
+
+            // Execute query
+            resultSet = statement.executeQuery();
+
+            queryContext.setConnection(connection);
+            queryContext.setStatement(statement);
+            queryContext.setResultSet(resultSet);
+
+            // Handle result
+            return queryContext.getResultHandler().handleResult(queryContext);
+        } catch (Throwable e) {
+            throw new CommonDaoException(e);
+        } finally {
+            // Release the database resources
+            closeQuietly(connection, statement, resultSet);
+        }
+    }
+
+    public static int executeUpdate(UpdateContext updateContext) {
+        Connection        connection = null;
+        PreparedStatement statement  = null;
+        try {
+            // Create database connection
+            connection = updateContext.getDataSource().getConnection();
+
+            // Prepare statement parameters
+            statement = connection.prepareStatement(updateContext.getSql());
+            JdbcUtils.prepareStatement(statement, updateContext.getStatementParams());
+
+            // Execute update
+            return statement.executeUpdate();
+        } catch (Throwable e) {
+            throw new CommonDaoException(e);
+        } finally {
+            // Release the database resources
+            closeQuietly(connection, statement);
+        }
+    }
+
+    public static StatementParam createStatementParam(Object argument) {
+        return new StatementParam(argument, JdbcUtils.getStatementSetter(argument));
+    }
+
+    public static List<StatementParam> createStatementParams(Object[] statementArgs) {
+        List<StatementParam> params;
+        if (statementArgs == null || statementArgs.length == 0) {
+            params = Collections.emptyList();
+        } else {
+            int length = statementArgs.length;
+            params = new ArrayList<StatementParam>(length);
+            for (Object param : statementArgs) {
+                params.add(new StatementParam(param, JdbcUtils.getStatementSetter(param)));
+            }
+        }
+        return params;
+    }
+
+    public static void buildWhereSql(CharsWriter cbuf, String whereClause) {
+        if (!startWithWhere(whereClause)) {
+            cbuf.append(" WHERE ");
+        } else if (whereClause.charAt(0) > ' ') {
+            cbuf.append(' ');
+        }
+        cbuf.write(whereClause);
+    }
+
+    protected static boolean startWithWhere(String whereClause) {
+        int index  = 0;
+        int length = whereClause.length();
+        while (index < length) {
+            if (whereClause.charAt(index) <= ' ') {
+                index++;
+                continue;
+            }
+            break;
+        }
+        return index < length && Character.toUpperCase(whereClause.charAt(index++)) == 'W' &&
+                index < length && Character.toUpperCase(whereClause.charAt(index++)) == 'H' &&
+                index < length && Character.toUpperCase(whereClause.charAt(index++)) == 'E' &&
+                index < length && Character.toUpperCase(whereClause.charAt(index++)) == 'R' &&
+                index < length && Character.toUpperCase(whereClause.charAt(index)) == 'E';
     }
 
 }

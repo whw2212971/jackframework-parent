@@ -22,6 +22,8 @@ public class ResultHandlers {
     public static final MapResultHandler     MAP_RESULT_HANDLER      = new MapResultHandler();
     public static final MapListResultHandler MAP_LIST_RESULT_HANDLER = new MapListResultHandler();
 
+    public static final BooleanResultHandler BOOLEAN_RESULT_HANDLER = new BooleanResultHandler();
+
     public static <T> ResultHandler<T> createUniqueResultHandler(Class<T> resultType) {
         return new UniqueResultHandler(getFastConstructor(resultType));
     }
@@ -111,6 +113,19 @@ public class ResultHandlers {
             }
             return result;
         }
+    }
+
+    public static class BooleanResultHandler implements ResultHandler<Boolean> {
+
+        @Override
+        public Boolean handleResult(QueryContext<Boolean> queryContext) throws SQLException {
+            ResultSet resultSet = queryContext.getResultSet();
+            if (resultSet.next()) {
+                return resultSet.getBoolean(1);
+            }
+            return Boolean.FALSE;
+        }
+
     }
 
     public static class MapResultHandler implements ResultHandler<Map<String, Object>> {

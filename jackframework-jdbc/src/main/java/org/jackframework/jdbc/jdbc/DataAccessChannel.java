@@ -5,14 +5,12 @@ import org.jackframework.jdbc.core.CommonDaoConfig;
 import org.jackframework.jdbc.core.CommonDaoException;
 import org.jackframework.jdbc.core.Excludes;
 import org.jackframework.jdbc.core.Includes;
+import org.jackframework.jdbc.dialect.ExistsChannel;
 import org.jackframework.jdbc.dialect.InsertChannel;
 import org.jackframework.jdbc.orm.ClassTable;
 import org.jackframework.jdbc.orm.FieldColumn;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +21,7 @@ public class DataAccessChannel {
 
     protected DataSource    dataSource;
     protected InsertChannel insertChannel;
+    protected ExistsChannel existsChannel;
     protected ClassTable    classTable;
 
     protected String deleteByIdSql;
@@ -40,6 +39,7 @@ public class DataAccessChannel {
         this.classTable = classTable;
         this.dataSource = config.getDataSource();
         this.insertChannel = config.getInsertChannelFactory().createInsertChannel(config, classTable);
+        this.existsChannel = config.getExistsChannelFactory().createExistsChannel(config, classTable);
         this.deleteByIdSql = buildDeleteByIdSql(classTable);
         this.deleteByWherePrefix = buildDeleteByWherePrefix(classTable);
         this.updateAllSql = buildUpdateAllSql(classTable);
@@ -58,13 +58,13 @@ public class DataAccessChannel {
     }
 
     public int deleteById(Object id) {
-        return update(deleteByIdSql, Collections.singletonList(createStatementParam(id)));
+        return update(deleteByIdSql, Collections.singletonList(JdbcUtils.createStatementParam(id)));
     }
 
     public int deleteByWhere(String whereClause, Object[] statementArgs) {
         CharsWriter cbuf = new CharsWriter().append(deleteByWherePrefix);
-        buildWhereSql(cbuf, whereClause);
-        return update(cbuf.closeToString(), createStatementParams(statementArgs));
+        JdbcUtils.buildWhereSql(cbuf, whereClause);
+        return update(cbuf.closeToString(), JdbcUtils.createStatementParams(statementArgs));
     }
 
     public int updateAll(Object dataObject) {
@@ -89,7 +89,7 @@ public class DataAccessChannel {
     public int updateByWhere(String updateClause, Object[] statementArgs) {
         return update(
                 new CharsWriter().append(updateByWherePrefix).append(updateClause).closeToString(),
-                createStatementParams(statementArgs));
+                JdbcUtils.createStatementParams(statementArgs));
     }
 
     public int updateOptimized(Object dataObject, Set<String> forceUpdateFields) {
@@ -150,6 +150,14 @@ public class DataAccessChannel {
         return findByWhere(whereClause, statementArgs, buildSelectedColumns(excludes), resultHandler);
     }
 
+    public boolean exists(Object id) {
+        return existsChannel.exists(id);
+    }
+
+    public boolean exists(String whereClause, Object[] statementArgs) {
+        return existsChannel.exists(whereClause, statementArgs);
+    }
+
     public DataSource getDataSource() {
         return dataSource;
     }
@@ -174,7 +182,8 @@ public class DataAccessChannel {
         UpdateContext updateContext = new UpdateContext();
         updateContext.setSql(sql);
         updateContext.setStatementParams(params);
-        return executeUpdate(updateContext);
+        updateContext.setDataSource(dataSource);
+        return JdbcUtils.executeUpdate(updateContext);
     }
 
     protected <T> T findById(Object id, List<FieldColumn> selectedColumns, ResultHandler<T> resultHandler) {
@@ -191,7 +200,10 @@ public class DataAccessChannel {
                 new StatementParam(id, JdbcUtils.getStatementSetter(id))));
         queryContext.setResultHandler(resultHandler);
 
-        return executeQuery(queryContext);
+        // Set query context
+        queryContext.setDataSource(dataSource);
+
+        return JdbcUtils.executeQuery(queryContext);
     }
 
     protected <T> T findByWhere(String whereClause, Object[] statementArgs,
@@ -201,13 +213,16 @@ public class DataAccessChannel {
 
         queryContext.setSelectedColumns(selectedColumns);
         buildSelectClause(cbuf, queryContext);
-        buildWhereSql(cbuf, whereClause);
+        JdbcUtils.buildWhereSql(cbuf, whereClause);
 
         queryContext.setSql(cbuf.closeToString());
-        queryContext.setStatementParams(createStatementParams(statementArgs));
+        queryContext.setStatementParams(JdbcUtils.createStatementParams(statementArgs));
         queryContext.setResultHandler(resultHandler);
 
-        return executeQuery(queryContext);
+        // Set query context
+        queryContext.setDataSource(dataSource);
+
+        return JdbcUtils.executeQuery(queryContext);
     }
 
     protected List<FieldColumn> buildSelectedColumns(Includes includes) {
@@ -252,59 +267,6 @@ public class DataAccessChannel {
         cbuf.append(" FROM ").write(classTable.getTable().getTableName());
     }
 
-    protected int executeUpdate(UpdateContext updateContext) {
-        Connection        connection = null;
-        PreparedStatement statement  = null;
-        try {
-            // Create database connection
-            connection = dataSource.getConnection();
-
-            // Prepare statement parameters
-            statement = connection.prepareStatement(updateContext.getSql());
-            JdbcUtils.prepareStatement(statement, updateContext.getStatementParams());
-
-            // Execute update
-            return statement.executeUpdate();
-        } catch (Throwable e) {
-            throw new CommonDaoException(e);
-        } finally {
-            // Release the database resources
-            JdbcUtils.closeQuietly(connection, statement);
-        }
-    }
-
-    protected <T> T executeQuery(QueryContext<T> queryContext) {
-        Connection        connection = null;
-        PreparedStatement statement  = null;
-        ResultSet         resultSet  = null;
-        DataSource        dataSource = this.dataSource;
-        try {
-            // Create database connection
-            connection = dataSource.getConnection();
-
-            // Prepare statement parameters
-            statement = connection.prepareStatement(queryContext.getSql());
-            JdbcUtils.prepareStatement(statement, queryContext.getStatementParams());
-
-            // Execute query
-            resultSet = statement.executeQuery();
-
-            // Set query context
-            queryContext.setDataSource(dataSource);
-            queryContext.setConnection(connection);
-            queryContext.setStatement(statement);
-            queryContext.setResultSet(resultSet);
-
-            // Handle result
-            return queryContext.getResultHandler().handleResult(queryContext);
-        } catch (Throwable e) {
-            throw new CommonDaoException(e);
-        } finally {
-            // Release the database resources
-            JdbcUtils.closeQuietly(connection, statement, resultSet);
-        }
-    }
-
     protected static StatementParam createStatementParam(FieldColumn fieldColumn, Object dataObject) {
         Object value = fieldColumn.getValue(dataObject);
         if (value == null) {
@@ -313,52 +275,8 @@ public class DataAccessChannel {
         return new StatementParam(fieldColumn.getValue(dataObject), fieldColumn.getStatementSetter());
     }
 
-    protected static StatementParam createStatementParam(Object argument) {
-        return new StatementParam(argument, JdbcUtils.getStatementSetter(argument));
-    }
-
-    protected static List<StatementParam> createStatementParams(Object[] statementArgs) {
-        List<StatementParam> params;
-        if (statementArgs == null || statementArgs.length == 0) {
-            params = Collections.emptyList();
-        } else {
-            int length = statementArgs.length;
-            params = new ArrayList<StatementParam>(length);
-            for (Object param : statementArgs) {
-                params.add(new StatementParam(param, JdbcUtils.getStatementSetter(param)));
-            }
-        }
-        return params;
-    }
-
     protected static boolean contains(Set<String> set, FieldColumn fieldColumn) {
         return set.contains(fieldColumn.getColumnName()) || set.contains(fieldColumn.getFieldName());
-    }
-
-    protected static void buildWhereSql(CharsWriter cbuf, String whereClause) {
-        if (!startWithWhere(whereClause)) {
-            cbuf.append(" WHERE ");
-        } else if (whereClause.charAt(0) > ' ') {
-            cbuf.append(' ');
-        }
-        cbuf.write(whereClause);
-    }
-
-    protected static boolean startWithWhere(String whereClause) {
-        int index  = 0;
-        int length = whereClause.length();
-        while (index < length) {
-            if (whereClause.charAt(index) <= ' ') {
-                index++;
-                continue;
-            }
-            break;
-        }
-        return index < length && Character.toUpperCase(whereClause.charAt(index++)) == 'W' &&
-                index < length && Character.toUpperCase(whereClause.charAt(index++)) == 'H' &&
-                index < length && Character.toUpperCase(whereClause.charAt(index++)) == 'E' &&
-                index < length && Character.toUpperCase(whereClause.charAt(index++)) == 'R' &&
-                index < length && Character.toUpperCase(whereClause.charAt(index)) == 'E';
     }
 
     protected static String buildDeleteByIdSql(ClassTable classTable) {
