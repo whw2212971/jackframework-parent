@@ -57,7 +57,7 @@ public class NormalExistsChannel implements ExistsChannel {
         return new CharsWriter()
                 .append("SELECT EXISTS(SELECT 1 FROM ")
                 .append(classTable.getTable().getTableName())
-                .append("WHERE ")
+                .append(" WHERE ")
                 .append(classTable.getPrimaryFieldColumn().getColumnName())
                 .append("=?) result")
                 .closeToString();
