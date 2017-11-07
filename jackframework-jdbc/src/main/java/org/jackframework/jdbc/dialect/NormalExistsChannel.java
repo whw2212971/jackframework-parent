@@ -56,7 +56,7 @@ public class NormalExistsChannel implements ExistsChannel {
     protected String buildSelectIdExistsSql(ClassTable classTable) {
         return new CharsWriter()
                 .append("SELECT EXISTS(SELECT 1 FROM ")
-                .append(classTable.getTable())
+                .append(classTable.getTable().getTableName())
                 .append("WHERE ")
                 .append(classTable.getPrimaryFieldColumn().getColumnName())
                 .append("=?) result")
@@ -66,7 +66,7 @@ public class NormalExistsChannel implements ExistsChannel {
     protected String buildSelectExistsByWhereSql(ClassTable classTable, String whereClause) {
         CharsWriter cbuf = new CharsWriter()
                 .append("SELECT EXISTS(SELECT 1 FROM ")
-                .append(classTable.getTable());
+                .append(classTable.getTable().getTableName());
 
         JdbcUtils.buildWhereSql(cbuf, whereClause);
 
