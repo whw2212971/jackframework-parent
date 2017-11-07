@@ -6,6 +6,7 @@ import org.jackframework.jdbc.core.CommonDaoException;
 import org.jackframework.jdbc.orm.FieldColumn;
 
 import java.lang.reflect.Constructor;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class ResultHandlers {
 
     public static final BooleanResultHandler BOOLEAN_RESULT_HANDLER = new BooleanResultHandler();
     public static final IntegerResultHandler INTEGER_RESULT_HANDLER = new IntegerResultHandler();
+    public static final DecimalResultHandler DECIMAL_RESULT_HANDLER = new DecimalResultHandler();
 
     public static <T> ResultHandler<T> createUniqueResultHandler(Class<T> resultType) {
         return new UniqueResultHandler(getFastConstructor(resultType));
@@ -138,6 +140,19 @@ public class ResultHandlers {
                 return resultSet.getInt(1);
             }
             return 0;
+        }
+
+    }
+
+    public static class DecimalResultHandler implements ResultHandler<BigDecimal> {
+
+        @Override
+        public BigDecimal handleResult(QueryContext<BigDecimal> queryContext) throws SQLException {
+            ResultSet resultSet = queryContext.getResultSet();
+            if (resultSet.next()) {
+                return resultSet.getBigDecimal(1);
+            }
+            return BigDecimal.ZERO;
         }
 
     }

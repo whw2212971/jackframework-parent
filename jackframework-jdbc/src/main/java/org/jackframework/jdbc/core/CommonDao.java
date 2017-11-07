@@ -6,6 +6,7 @@ import org.jackframework.jdbc.jdbc.DataAccessChannelFactory;
 import org.jackframework.jdbc.jdbc.ResultHandlers;
 import org.jackframework.jdbc.orm.ClassTable;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
@@ -314,15 +315,15 @@ public class CommonDao {
         return getDataAccessChannel(dataType).count(whereClause, statementArgs);
     }
 
-    public int max(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
+    public <T> T max(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
         return getDataAccessChannel(dataType).max(field, whereClause, statementArgs);
     }
 
-    public int min(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
+    public <T> T min(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
         return getDataAccessChannel(dataType).min(field, whereClause, statementArgs);
     }
 
-    public int avg(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
+    public BigDecimal avg(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
         return getDataAccessChannel(dataType).avg(field, whereClause, statementArgs);
     }
 

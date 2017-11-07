@@ -11,6 +11,7 @@ import org.jackframework.jdbc.orm.ClassTable;
 import org.jackframework.jdbc.orm.FieldColumn;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -159,22 +160,25 @@ public class DataAccessChannel {
     }
 
     public int count(String whereClause, Object... statementArgs) {
-        return findByWhere("SELECT COUNT(1)", whereClause, statementArgs, ResultHandlers.INTEGER_RESULT_HANDLER);
+        return findByWhere("SELECT COUNT(1)", whereClause, statementArgs, null, ResultHandlers.INTEGER_RESULT_HANDLER);
     }
 
-    public int max(String field, String whereClause, Object... statementArgs) {
-        return findByWhere("SELECT MAX(" + getAndCheckColumn(field) + ")",
-                whereClause, statementArgs, ResultHandlers.INTEGER_RESULT_HANDLER);
+    public <T> T max(String field, String whereClause, Object... statementArgs) {
+        FieldColumn fieldColumn = getAndCheckColumn(field);
+        return findByWhere("SELECT MAX(" + fieldColumn.getColumnName() + ")", whereClause,
+                statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.<T>getFieldHandler());
     }
 
-    public int min(String field, String whereClause, Object... statementArgs) {
-        return findByWhere("SELECT MIN(" + getAndCheckColumn(field) + ")",
-                whereClause, statementArgs, ResultHandlers.INTEGER_RESULT_HANDLER);
+    public <T> T min(String field, String whereClause, Object... statementArgs) {
+        FieldColumn fieldColumn = getAndCheckColumn(field);
+        return findByWhere("SELECT MIN(" + fieldColumn.getColumnName() + ")", whereClause,
+                statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.<T>getFieldHandler());
     }
 
-    public int avg(String field, String whereClause, Object... statementArgs) {
-        return findByWhere("SELECT AVG(" + getAndCheckColumn(field) + ")",
-                whereClause, statementArgs, ResultHandlers.INTEGER_RESULT_HANDLER);
+    public BigDecimal avg(String field, String whereClause, Object... statementArgs) {
+        FieldColumn fieldColumn = getAndCheckColumn(field);
+        return findByWhere("SELECT AVG(" + fieldColumn.getColumnName() + ")", whereClause,
+                statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.DECIMAL_RESULT_HANDLER);
     }
 
     public DataSource getDataSource() {
@@ -244,13 +248,13 @@ public class DataAccessChannel {
         return JdbcUtils.executeQuery(queryContext);
     }
 
-    protected <T> T findByWhere(String selectClause, String whereClause,
-                                Object[] statementArgs, ResultHandler<T> resultHandler) {
+    protected <T> T findByWhere(String selectClause, String whereClause, Object[] statementArgs,
+                                List<FieldColumn> selectedColumns, ResultHandler<T> resultHandler) {
         CharsWriter     cbuf         = new CharsWriter();
         QueryContext<T> queryContext = new QueryContext<T>();
 
+        queryContext.setSelectedColumns(selectedColumns);
         cbuf.append(selectClause).append(" FROM ").write(classTable.getTable().getTableName());
-        buildSelectClause(cbuf, queryContext);
         JdbcUtils.buildWhereSql(cbuf, whereClause);
 
         queryContext.setSql(cbuf.closeToString());
@@ -305,13 +309,13 @@ public class DataAccessChannel {
         cbuf.append(" FROM ").write(classTable.getTable().getTableName());
     }
 
-    protected String getAndCheckColumn(String field) {
+    protected FieldColumn getAndCheckColumn(String field) {
         FieldColumn fieldColumn = classTable.getFieldColumn(field);
         if (fieldColumn == null) {
             throw new CommonDaoException(
                     "Could not found the field '{}' from '{}'.", field, classTable.getDataType().getName());
         }
-        return fieldColumn.getColumnName();
+        return fieldColumn;
     }
 
     protected static StatementParam createStatementParam(FieldColumn fieldColumn, Object dataObject) {
