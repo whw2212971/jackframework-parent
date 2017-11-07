@@ -310,6 +310,22 @@ public class CommonDao {
         return getDataAccessChannel(dataType).exists(whereClause, statementArgs);
     }
 
+    public int count(Class<?> dataType, String whereClause, Object... statementArgs) {
+        return getDataAccessChannel(dataType).count(whereClause, statementArgs);
+    }
+
+    public int max(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
+        return getDataAccessChannel(dataType).max(field, whereClause, statementArgs);
+    }
+
+    public int min(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
+        return getDataAccessChannel(dataType).min(field, whereClause, statementArgs);
+    }
+
+    public int avg(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
+        return getDataAccessChannel(dataType).avg(field, whereClause, statementArgs);
+    }
+
     public DataAccessChannel getDataAccessChannel(Class<?> dataType) {
         return dataAccessChannelFactory.getDataAccessChannel(dataType);
     }

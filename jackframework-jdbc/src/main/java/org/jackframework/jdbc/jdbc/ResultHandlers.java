@@ -23,6 +23,7 @@ public class ResultHandlers {
     public static final MapListResultHandler MAP_LIST_RESULT_HANDLER = new MapListResultHandler();
 
     public static final BooleanResultHandler BOOLEAN_RESULT_HANDLER = new BooleanResultHandler();
+    public static final IntegerResultHandler INTEGER_RESULT_HANDLER = new IntegerResultHandler();
 
     public static <T> ResultHandler<T> createUniqueResultHandler(Class<T> resultType) {
         return new UniqueResultHandler(getFastConstructor(resultType));
@@ -124,6 +125,19 @@ public class ResultHandlers {
                 return resultSet.getBoolean(1);
             }
             return Boolean.FALSE;
+        }
+
+    }
+
+    public static class IntegerResultHandler implements ResultHandler<Integer> {
+
+        @Override
+        public Integer handleResult(QueryContext<Integer> queryContext) throws SQLException {
+            ResultSet resultSet = queryContext.getResultSet();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+            return 0;
         }
 
     }

@@ -158,6 +158,25 @@ public class DataAccessChannel {
         return existsChannel.exists(whereClause, statementArgs);
     }
 
+    public int count(String whereClause, Object... statementArgs) {
+        return findByWhere("SELECT COUNT(1)", whereClause, statementArgs, ResultHandlers.INTEGER_RESULT_HANDLER);
+    }
+
+    public int max(String field, String whereClause, Object... statementArgs) {
+        return findByWhere("SELECT MAX(" + getAndCheckColumn(field) + ")",
+                whereClause, statementArgs, ResultHandlers.INTEGER_RESULT_HANDLER);
+    }
+
+    public int min(String field, String whereClause, Object... statementArgs) {
+        return findByWhere("SELECT MIN(" + getAndCheckColumn(field) + ")",
+                whereClause, statementArgs, ResultHandlers.INTEGER_RESULT_HANDLER);
+    }
+
+    public int avg(String field, String whereClause, Object... statementArgs) {
+        return findByWhere("SELECT AVG(" + getAndCheckColumn(field) + ")",
+                whereClause, statementArgs, ResultHandlers.INTEGER_RESULT_HANDLER);
+    }
+
     public DataSource getDataSource() {
         return dataSource;
     }
@@ -225,6 +244,25 @@ public class DataAccessChannel {
         return JdbcUtils.executeQuery(queryContext);
     }
 
+    protected <T> T findByWhere(String selectClause, String whereClause,
+                                Object[] statementArgs, ResultHandler<T> resultHandler) {
+        CharsWriter     cbuf         = new CharsWriter();
+        QueryContext<T> queryContext = new QueryContext<T>();
+
+        cbuf.append(selectClause).append(" FROM ").write(classTable.getTable().getTableName());
+        buildSelectClause(cbuf, queryContext);
+        JdbcUtils.buildWhereSql(cbuf, whereClause);
+
+        queryContext.setSql(cbuf.closeToString());
+        queryContext.setStatementParams(JdbcUtils.createStatementParams(statementArgs));
+        queryContext.setResultHandler(resultHandler);
+
+        // Set query context
+        queryContext.setDataSource(dataSource);
+
+        return JdbcUtils.executeQuery(queryContext);
+    }
+
     protected List<FieldColumn> buildSelectedColumns(Includes includes) {
         ClassTable        classTable      = this.classTable;
         int               length          = classTable.getFieldColumnsCount();
@@ -265,6 +303,15 @@ public class DataAccessChannel {
             cbuf.append(',').write(selectedColumns.get(i).getColumnName());
         }
         cbuf.append(" FROM ").write(classTable.getTable().getTableName());
+    }
+
+    protected String getAndCheckColumn(String field) {
+        FieldColumn fieldColumn = classTable.getFieldColumn(field);
+        if (fieldColumn == null) {
+            throw new CommonDaoException(
+                    "Could not found the field '{}' from '{}'.", field, classTable.getDataType().getName());
+        }
+        return fieldColumn.getColumnName();
     }
 
     protected static StatementParam createStatementParam(FieldColumn fieldColumn, Object dataObject) {
