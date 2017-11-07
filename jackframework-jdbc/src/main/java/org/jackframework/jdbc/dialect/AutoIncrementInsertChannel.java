@@ -117,6 +117,7 @@ public class AutoIncrementInsertChannel implements InsertChannel {
             }
             cbuf.append(',').write(fieldColumn.getColumnName());
         }
+        isFirst = true;
         cbuf.write(") VALUES(");
         for (int i = 1; i < length; i++) {
             if (classTable.getFieldColumn(i).getValue(dataObject) == null) {
