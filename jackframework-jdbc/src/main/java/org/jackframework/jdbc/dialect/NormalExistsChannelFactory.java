@@ -5,9 +5,9 @@ import org.jackframework.jdbc.orm.ClassTable;
 
 public class NormalExistsChannelFactory implements ExistsChannelFactory {
 
-
     @Override
     public ExistsChannel createExistsChannel(CommonDaoConfig config, ClassTable classTable) {
-        return null;
+        return new NormalExistsChannel(config.getDataSource(), classTable);
     }
+
 }
