@@ -302,6 +302,13 @@ public class CommonDao {
                 .findByWhere(excludes, whereClause, statementArgs, ResultHandlers.MAP_LIST_RESULT_HANDLER);
     }
 
+    public boolean exists(Class<?> dataType, Object id) {
+        return getDataAccessChannel(dataType).exists(id);
+    }
+
+    public boolean exists(Class<?> dataType, String whereClause, Object... statementArgs) {
+        return getDataAccessChannel(dataType).exists(whereClause, statementArgs);
+    }
 
     public DataAccessChannel getDataAccessChannel(Class<?> dataType) {
         return dataAccessChannelFactory.getDataAccessChannel(dataType);
