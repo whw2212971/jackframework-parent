@@ -4,7 +4,7 @@ import javax.servlet.ServletException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-class ServiceServletException extends ServletException {
+public class ServiceServletException extends ServletException {
 
     public ServiceServletException(Throwable cause) {
         super(cause);
