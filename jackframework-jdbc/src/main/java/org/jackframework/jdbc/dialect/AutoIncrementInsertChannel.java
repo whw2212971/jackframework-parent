@@ -57,8 +57,7 @@ public class AutoIncrementInsertChannel implements InsertChannel {
             if (length <= limit) {
                 executeBatch(statement, dataObjectList, 0, length);
             } else {
-                prepareBatchInsertStatement(statement, dataObjectList, 0, limit);
-                statement.executeBatch();
+                executeBatch(statement, dataObjectList, 0,  limit);
                 int times  = length / limit;
                 int offset = limit;
                 for (int i = 1; i < times; i++) {
