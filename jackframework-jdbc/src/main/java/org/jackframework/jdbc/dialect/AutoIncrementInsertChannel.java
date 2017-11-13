@@ -53,10 +53,9 @@ public class AutoIncrementInsertChannel implements InsertChannel {
         PreparedStatement statement  = null;
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement(insertSql);
+            statement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
             if (length <= limit) {
-                prepareBatchInsertStatement(statement, dataObjectList, 0, length);
-                statement.executeBatch();
+                executeBatch(statement, dataObjectList, 0, length);
             } else {
                 prepareBatchInsertStatement(statement, dataObjectList, 0, limit);
                 statement.executeBatch();
@@ -64,13 +63,11 @@ public class AutoIncrementInsertChannel implements InsertChannel {
                 int offset = limit;
                 for (int i = 1; i < times; i++) {
                     statement.clearBatch();
-                    prepareBatchInsertStatement(statement, dataObjectList, offset, offset += limit);
-                    statement.executeBatch();
+                    executeBatch(statement, dataObjectList, offset, offset += limit);
                 }
                 if (offset < length) {
                     statement.clearBatch();
-                    prepareBatchInsertStatement(statement, dataObjectList, offset, length);
-                    statement.executeBatch();
+                    executeBatch(statement, dataObjectList, offset, length);
                 }
             }
         } catch (Throwable e) {
@@ -90,8 +87,23 @@ public class AutoIncrementInsertChannel implements InsertChannel {
     protected void prepareBatchInsertStatement(PreparedStatement statement,
                                                List<?> dataObjectList, int offset, int end) throws SQLException {
         while (offset < end) {
-            prepareInsertStatement(statement, dataObjectList);
+            prepareInsertStatement(statement, dataObjectList.get(offset++));
             statement.addBatch();
+        }
+    }
+
+    protected void executeBatch(PreparedStatement statement,
+                                List<?> dataObjectList, int offset, int end) throws SQLException {
+        prepareBatchInsertStatement(statement, dataObjectList, offset, end);
+        statement.executeBatch();
+        ResultSet resultSet = statement.getGeneratedKeys();
+        try {
+            while (offset < end) {
+                resultSet.next();
+                setPrimaryKey(dataObjectList.get(offset++), resultSet);
+            }
+        } finally {
+            JdbcUtils.closeQuietly(resultSet);
         }
     }
 
