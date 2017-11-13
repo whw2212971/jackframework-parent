@@ -34,7 +34,7 @@ public class CommonDao {
                 getDataAccessChannel(dataObjects.getClass()).insert(list.get(0));
                 continue;
             }
-            getDataAccessChannel(dataObjects.getClass()).insertList(list);
+            getDataAccessChannel(entry.getKey()).insertList(list);
         }
     }
 
@@ -48,7 +48,7 @@ public class CommonDao {
                 getDataAccessChannel(dataList.getClass()).insert(list.get(0));
                 continue;
             }
-            getDataAccessChannel(dataList.getClass()).insertList(list);
+            getDataAccessChannel(entry.getKey()).insertList(list);
         }
     }
 
