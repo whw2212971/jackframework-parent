@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +98,7 @@ public class DataAccessChannelFactory {
                 columns.add(new Column(name, columnSet.getInt("DATA_TYPE"), true, table));
             }
             return table;
-        } catch (Throwable e) {
+        } catch (SQLException e) {
             throw new CommonDaoException(e);
         } finally {
             JdbcUtils.closeQuietly(primaryKeySet);
