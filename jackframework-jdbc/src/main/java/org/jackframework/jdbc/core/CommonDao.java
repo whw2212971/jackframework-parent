@@ -31,7 +31,7 @@ public class CommonDao {
         for (Map.Entry<Class<?>, List<Object>> entry : groupDataObjects(dataObjects).entrySet()) {
             List<Object> list = entry.getValue();
             if (list.size() == 1) {
-                getDataAccessChannel(dataObjects.getClass()).insert(list.get(0));
+                getDataAccessChannel(entry.getKey()).insert(list.get(0));
                 continue;
             }
             getDataAccessChannel(entry.getKey()).insertList(list);
@@ -45,7 +45,7 @@ public class CommonDao {
         for (Map.Entry<Class<?>, List<Object>> entry : groupDataList(dataList).entrySet()) {
             List<Object> list = entry.getValue();
             if (list.size() == 1) {
-                getDataAccessChannel(dataList.getClass()).insert(list.get(0));
+                getDataAccessChannel(entry.getKey()).insert(list.get(0));
                 continue;
             }
             getDataAccessChannel(entry.getKey()).insertList(list);
