@@ -8,8 +8,9 @@ import javax.servlet.http.HttpSession;
 
 public class ServiceHolder {
 
-    protected static final ThreadLocal<RequestLocal> REQUEST_LOCAL      = new ThreadLocal<RequestLocal>();
-    protected static final ThreadLocal<String>       REQUEST_BODY_LOCAL = new ThreadLocal<String>();
+    protected static final ThreadLocal<RequestLocal> REQUEST_LOCAL       = new ThreadLocal<RequestLocal>();
+    protected static final ThreadLocal<String>       REQUEST_BODY_LOCAL  = new ThreadLocal<String>();
+    protected static final ThreadLocal<String>       REQUEST_ROUTE_LOCAL = new ThreadLocal<String>();
 
     public static ServiceSession getSession() {
         return getSession(true);
@@ -19,7 +20,7 @@ public class ServiceHolder {
         RequestLocal requestLocal = REQUEST_LOCAL.get();
         if (requestLocal == null) {
             if (create) {
-                throw new RunningException("Can't work without filter '{}'.", ServiceSessionFilter.class.getName());
+                throw new RunningException("Can't work without filter '{}'.", ServiceFilter.class.getName());
             }
             return null;
         }
@@ -30,12 +31,20 @@ public class ServiceHolder {
         return REQUEST_BODY_LOCAL.get();
     }
 
+    public static String getRequestRoute() {
+        return REQUEST_ROUTE_LOCAL.get();
+    }
+
     protected static void setRequestLocal(HttpServletRequest request) {
         REQUEST_LOCAL.set(new RequestLocal(request));
     }
 
     protected static void setRequestBody(String requestBody) {
         REQUEST_BODY_LOCAL.set(requestBody);
+    }
+
+    protected static void setRequestRoute(String requestRoute) {
+        REQUEST_ROUTE_LOCAL.set(requestRoute);
     }
 
     protected static class RequestLocal {
