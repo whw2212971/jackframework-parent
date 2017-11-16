@@ -111,7 +111,7 @@ public class ResultHandlers {
         public List<T> handleResult(QueryContext<List<T>> queryContext) throws SQLException {
             ResultSet resultSet = queryContext.getResultSet();
             List<T>   result    = new ArrayList<T>();
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 result.add((T) queryContext.getSelectedColumns().get(0).getResultValue(resultSet, 1));
             }
             return result;
