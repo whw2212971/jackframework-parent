@@ -78,6 +78,9 @@ public class ExceptionHandleFilter implements Filter {
                 result.put("errorCode", errorCode);
                 result.put("errorMessage", errorMessage);
 
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("application/json;charset=utf-8");
+
                 JSON.writeJSONString(out = response.getWriter(), result);
             }
 
