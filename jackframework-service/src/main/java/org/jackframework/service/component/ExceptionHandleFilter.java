@@ -62,7 +62,8 @@ public class ExceptionHandleFilter implements Filter {
 
             String contentType = request.getContentType();
             String accept      = request.getHeader("Accept");
-            if ((contentType != null && contentType.contains("json")) ||
+            if ((contentType != null &&
+                    (contentType.contains("json") || contentType.contains("multipart/form-data"))) ||
                     (accept != null && accept.contains("json"))) {
                 int    errorCode;
                 String errorMessage;
@@ -82,6 +83,7 @@ public class ExceptionHandleFilter implements Filter {
                 response.setContentType("application/json;charset=utf-8");
 
                 JSON.writeJSONString(out = response.getWriter(), result);
+                return;
             }
 
             if (errorPage != null) {
