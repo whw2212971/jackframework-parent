@@ -73,7 +73,7 @@ public class ServiceMethodHandler {
     }
 
     public Object getBeanObject() {
-        return beanObject;
+        return isSingleton ? beanObject : applicationContext.getBean(beanName);
     }
 
     public FastMethod getServiceMethod() {
