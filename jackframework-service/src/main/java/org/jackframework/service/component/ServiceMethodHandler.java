@@ -89,14 +89,23 @@ public class ServiceMethodHandler {
     }
 
     public Class<?>[] getParameterTypes() {
+        if (parameterTypes == null) {
+            return new Class<?>[0];
+        }
         return Arrays.copyOf(parameterTypes, parameterTypes.length);
     }
 
     public Type[] getGenericParameterTypes() {
+        if (genericParameterTypes == null) {
+            return new Type[0];
+        }
         return Arrays.copyOf(genericParameterTypes, genericParameterTypes.length);
     }
 
     public String[] getParameterNames() {
+        if (parameterNames == null) {
+            return new String[0];
+        }
         return Arrays.copyOf(parameterNames, parameterNames.length);
     }
 

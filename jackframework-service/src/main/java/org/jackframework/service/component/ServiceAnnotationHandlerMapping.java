@@ -5,6 +5,7 @@ import org.jackframework.service.annotation.Publish;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
@@ -18,7 +19,7 @@ public class ServiceAnnotationHandlerMapping extends AbstractUrlHandlerMapping i
     public void afterPropertiesSet() throws Exception {
         ApplicationContext context = getApplicationContext();
         for (String beanName : context.getBeanNamesForAnnotation(EndService.class)) {
-            Class<?> handlerType    = context.getType(beanName);
+            Class<?> handlerType    = ClassUtils.getUserClass(context.getType(beanName));
             Publish  typePublishApi = context.findAnnotationOnBean(beanName, Publish.class);
             String   typeUrlPath    = "/";
             if (typePublishApi != null) {
