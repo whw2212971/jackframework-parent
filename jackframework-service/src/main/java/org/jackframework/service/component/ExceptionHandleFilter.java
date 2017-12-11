@@ -49,9 +49,9 @@ public class ExceptionHandleFilter implements Filter {
             ServiceException serviceException = null;
             if (exception instanceof ServiceException) {
                 serviceException = (ServiceException) exception;
-                LOGGER.error("Service exception", exception);
+                LOGGER.error("Service exception, {}", getRequestContent(request), exception);
             } else {
-                LOGGER.error("Internal server error{}", getRequestContent(request), exception);
+                LOGGER.error("Internal server error, {}", getRequestContent(request), exception);
             }
 
             logged = true;
@@ -109,9 +109,10 @@ public class ExceptionHandleFilter implements Filter {
     protected String getRequestContent(HttpServletRequest request) {
         try {
             CharsWriter writer = new CharsWriter()
-                    .append("\nRequest Headers: ").append(getRequestHeaders(request))
+                    .append("\nRequest Uri: ").append(request.getRequestURI())
                     .append("\nRequest Parameters: ").append(getRequestParameters(request))
-                    .append("\nSession Attributes: ").append(getSessionAttributes(request));
+                    .append("\nSession Attributes: ").append(getSessionAttributes(request))
+                    .append("\nRequest Headers: ").append(getRequestHeaders(request));
 
             String body = getRequestBody();
 
