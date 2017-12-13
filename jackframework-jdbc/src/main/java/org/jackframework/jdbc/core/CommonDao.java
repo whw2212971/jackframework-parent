@@ -327,6 +327,10 @@ public class CommonDao {
         return getDataAccessChannel(dataType).avg(field, whereClause, statementArgs);
     }
 
+    public BigDecimal sum(Class<?> dataType, String field, String whereClause, Object... statementArgs) {
+        return getDataAccessChannel(dataType).sum(field, whereClause, statementArgs);
+    }
+
     public DataAccessChannel getDataAccessChannel(Class<?> dataType) {
         return dataAccessChannelFactory.getDataAccessChannel(dataType);
     }

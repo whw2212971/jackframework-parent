@@ -181,6 +181,12 @@ public class DataAccessChannel {
                 statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.DECIMAL_RESULT_HANDLER);
     }
 
+    public BigDecimal sum(String field, String whereClause, Object... statementArgs) {
+        FieldColumn fieldColumn = getAndCheckColumn(field);
+        return findByWhere("SELECT SUM(" + fieldColumn.getColumnName() + ")", whereClause,
+                statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.DECIMAL_RESULT_HANDLER);
+    }
+
     public DataSource getDataSource() {
         return dataSource;
     }
