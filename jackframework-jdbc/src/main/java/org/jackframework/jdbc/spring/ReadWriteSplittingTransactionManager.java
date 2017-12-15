@@ -50,6 +50,7 @@ public class ReadWriteSplittingTransactionManager implements PlatformTransaction
             stack.setLast(node);
         } else {
             last.setNext(node);
+            node.setPrev(last);
             stack.setLast(node);
         }
     }
