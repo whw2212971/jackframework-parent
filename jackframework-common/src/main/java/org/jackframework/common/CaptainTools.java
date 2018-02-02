@@ -11,6 +11,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
@@ -21,12 +22,15 @@ public abstract class CaptainTools {
 
     public static final
     ThreadLocal<SoftReference<char[]>> THREAD_CHAR_BUFFER_CACHE = new ThreadLocal<SoftReference<char[]>>();
-    public static final int DEFAULT_THREAD_CHAR_BUFFER_SIZE       = 1024;
+
+    public static final int DEFAULT_THREAD_CHAR_BUFFER_SIZE = 1024;
+
     public static final int MAX_THREAD_REFERENCE_CHAR_BUFFER_SIZE = DEFAULT_THREAD_CHAR_BUFFER_SIZE * 8;
 
     public static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
-    protected static final char[] MIN_INT_VALUE  = "-2147483648".toCharArray();
+    protected static final char[] MIN_INT_VALUE = "-2147483648".toCharArray();
+
     protected static final char[] MIN_LONG_VALUE = "-9223372036854775808".toCharArray();
 
     protected static final int[]  INT_SIZE_TABLE = {
@@ -61,9 +65,9 @@ public abstract class CaptainTools {
             return null;
         }
 
-        int length   = message.length();
-        int index    = 0;
-        int prev     = 0;
+        int length = message.length();
+        int index = 0;
+        int prev = 0;
         int argIndex = 0;
         int codePoint;
 
@@ -165,10 +169,10 @@ public abstract class CaptainTools {
 
         // x  -> getX
         // xx -> getXx
-        String   getterName   = getGetterName(fieldName);
-        Class<?> classType    = field.getDeclaringClass();
-        Class<?> fieldType    = field.getType();
-        Method   getterMethod = tryGetMethod(classType, getterName);
+        String getterName = getGetterName(fieldName);
+        Class<?> classType = field.getDeclaringClass();
+        Class<?> fieldType = field.getType();
+        Method getterMethod = tryGetMethod(classType, getterName);
 
         if (getterMethod == null && (fieldType == boolean.class || fieldType == Boolean.class)) {
             if (fieldName.length() == 1) {
@@ -195,10 +199,10 @@ public abstract class CaptainTools {
 
         // x  -> setX
         // xx -> setXx
-        String   getterName   = getSetterName(fieldName);
-        Class<?> classType    = field.getDeclaringClass();
-        Class<?> fieldType    = field.getType();
-        Method   getterMethod = tryGetMethod(classType, getterName, fieldType);
+        String getterName = getSetterName(fieldName);
+        Class<?> classType = field.getDeclaringClass();
+        Class<?> fieldType = field.getType();
+        Method getterMethod = tryGetMethod(classType, getterName, fieldType);
 
         if (getterMethod == null && (fieldType == boolean.class || fieldType == Boolean.class) &&
                 fieldName.length() > 1 && fieldName.substring(0, 2).toLowerCase().equals("is")) {
@@ -301,7 +305,7 @@ public abstract class CaptainTools {
         }
         if (type instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType) type;
-            Type[]       bounds       = wildcardType.getLowerBounds();
+            Type[] bounds = wildcardType.getLowerBounds();
             if (bounds.length == 0) {
                 return getTypeClass(wildcardType.getUpperBounds()[0]);
             }
@@ -309,15 +313,15 @@ public abstract class CaptainTools {
         }
         if (type instanceof GenericArrayType) {
             GenericArrayType genericArrayType = (GenericArrayType) type;
-            Type             componentType    = genericArrayType.getGenericComponentType();
-            CharsWriter      cbuf             = new CharsWriter().append('[');
+            Type componentType = genericArrayType.getGenericComponentType();
+            CharsWriter cbuf = new CharsWriter().append('[');
             while (componentType instanceof GenericArrayType) {
                 cbuf.write('[');
                 componentType = ((GenericArrayType) componentType).getGenericComponentType();
             }
             try {
                 return Class.forName(cbuf.append('L')
-                        .append(getTypeClass(componentType).getName()).append(';').closeToString());
+                                             .append(getTypeClass(componentType).getName()).append(';').closeToString());
             } catch (ClassNotFoundException e) {
                 throw new WrappedException(e);
             }
@@ -409,7 +413,7 @@ public abstract class CaptainTools {
 
     public static String toString(Reader reader) {
         char[] buffer = mallocBuffer();
-        int    size   = 0, len = buffer.length, rlen;
+        int size = 0, len = buffer.length, rlen;
         try {
             while ((rlen = reader.read(buffer, size, len)) != -1) {
                 size += rlen;
@@ -525,6 +529,22 @@ public abstract class CaptainTools {
         return ATOMIC_LONG.incrementAndGet();
     }
 
+    public static String randomUUID() {
+        UUID uuid = UUID.randomUUID();
+        long mostSigBits = uuid.getMostSignificantBits();
+        long leastSigBits = uuid.getLeastSignificantBits();
+        return (digits(mostSigBits >> 32, 8) +
+                digits(mostSigBits >> 16, 4) +
+                digits(mostSigBits, 4) +
+                digits(leastSigBits >> 48, 4) +
+                digits(leastSigBits, 12));
+    }
+
+    protected static String digits(long val, int digits) {
+        long hi = 1L << (digits * 4);
+        return Long.toHexString(hi | (val & (hi - 1))).substring(1);
+    }
+
     public static char[] mallocBuffer() {
         return mallocBuffer(DEFAULT_THREAD_CHAR_BUFFER_SIZE);
     }
@@ -598,7 +618,7 @@ public abstract class CaptainTools {
             return;
         }
 
-        int  q, r;
+        int q, r;
         char sign = 0;
 
         if (value < 0) {
@@ -640,7 +660,7 @@ public abstract class CaptainTools {
         }
 
         long q;
-        int  r;
+        int r;
         char sign = 0;
 
         if (value < 0) {
