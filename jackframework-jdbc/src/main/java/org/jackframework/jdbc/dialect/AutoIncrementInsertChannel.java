@@ -27,9 +27,9 @@ public class AutoIncrementInsertChannel implements InsertChannel {
 
     @Override
     public void insert(Object dataObject) {
-        Connection        connection = null;
-        PreparedStatement statement  = null;
-        ResultSet         resultSet  = null;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
         try {
             connection = dataSource.getConnection();
             statement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
@@ -47,18 +47,18 @@ public class AutoIncrementInsertChannel implements InsertChannel {
 
     @Override
     public void insertList(List<?> dataObjectList) {
-        int               limit      = batchUpdateLimit;
-        int               length     = dataObjectList.size();
-        Connection        connection = null;
-        PreparedStatement statement  = null;
+        int limit = batchUpdateLimit;
+        int length = dataObjectList.size();
+        Connection connection = null;
+        PreparedStatement statement = null;
         try {
             connection = dataSource.getConnection();
             statement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
             if (length <= limit) {
                 executeBatch(statement, dataObjectList, 0, length);
             } else {
-                executeBatch(statement, dataObjectList, 0,  limit);
-                int times  = length / limit;
+                executeBatch(statement, dataObjectList, 0, limit);
+                int times = length / limit;
                 int offset = limit;
                 for (int i = 1; i < times; i++) {
                     statement.clearBatch();

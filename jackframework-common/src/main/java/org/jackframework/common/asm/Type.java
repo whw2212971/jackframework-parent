@@ -7,13 +7,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -309,9 +309,9 @@ public class Type {
      * method descriptor.
      */
     public static Type[] getArgumentTypes(final String methodDescriptor) {
-        char[] buf  = methodDescriptor.toCharArray();
-        int    off  = 1;
-        int    size = 0;
+        char[] buf = methodDescriptor.toCharArray();
+        int off = 1;
+        int size = 0;
         while (true) {
             char car = buf[off++];
             if (car == ')') {
@@ -345,7 +345,7 @@ public class Type {
      */
     public static Type[] getArgumentTypes(final Method method) {
         Class<?>[] classes = method.getParameterTypes();
-        Type[]     types   = new Type[classes.length];
+        Type[] types = new Type[classes.length];
         for (int i = classes.length - 1; i >= 0; --i) {
             types[i] = getType(classes[i]);
         }
@@ -362,7 +362,7 @@ public class Type {
      */
     public static Type getReturnType(final String methodDescriptor) {
         char[] buf = methodDescriptor.toCharArray();
-        int    off = 1;
+        int off = 1;
         while (true) {
             char car = buf[off++];
             if (car == ')') {
@@ -697,8 +697,8 @@ public class Type {
      * @return the descriptor of the given constructor.
      */
     public static String getConstructorDescriptor(final Constructor<?> c) {
-        Class<?>[]    parameters = c.getParameterTypes();
-        StringBuilder buf        = new StringBuilder();
+        Class<?>[] parameters = c.getParameterTypes();
+        StringBuilder buf = new StringBuilder();
         buf.append('(');
         for (int i = 0; i < parameters.length; ++i) {
             getDescriptor(buf, parameters[i]);
@@ -713,8 +713,8 @@ public class Type {
      * @return the descriptor of the given method.
      */
     public static String getMethodDescriptor(final Method m) {
-        Class<?>[]    parameters = m.getParameterTypes();
-        StringBuilder buf        = new StringBuilder();
+        Class<?>[] parameters = m.getParameterTypes();
+        StringBuilder buf = new StringBuilder();
         buf.append('(');
         for (int i = 0; i < parameters.length; ++i) {
             getDescriptor(buf, parameters[i]);
@@ -762,7 +762,7 @@ public class Type {
             } else {
                 buf.append('L');
                 String name = d.getName();
-                int    len  = name.length();
+                int len = name.length();
                 for (int i = 0; i < len; ++i) {
                     char car = name.charAt(i);
                     buf.append(car == '.' ? '/' : car);

@@ -7,13 +7,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -235,7 +235,7 @@ class Frame {
      * Computes the stack size variation corresponding to each JVM instruction.
      */
     static {
-        int   i;
+        int i;
         int[] b = new int[202];
         String s = "EFFFFFFFFGGFFFGGFFFEEFGFGFEEEEEEEEEEEEEEEEEEEEDEDEDDDDD"
                 + "CDCDEEEEEEEEEEEEEEEEEEEEBABABBBBDCFFFGGGEDCDCDCDCDCDCDCDCD"
@@ -590,7 +590,7 @@ class Frame {
             } else {
                 output[i++] = UNINITIALIZED
                         | cw.addUninitializedType("",
-                        ((Label) input[j]).position);
+                                                  ((Label) input[j]).position);
             }
         }
         return i;
@@ -709,7 +709,7 @@ class Frame {
      */
     static int type(final org.jackframework.common.asm.ClassWriter cw, final String desc) {
         String t;
-        int    index = desc.charAt(0) == '(' ? desc.indexOf(')') + 1 : 0;
+        int index = desc.charAt(0) == '(' ? desc.indexOf(')') + 1 : 0;
         switch (desc.charAt(index)) {
             case 'V':
                 return 0;
@@ -862,8 +862,8 @@ class Frame {
             return t;
         }
         for (int j = 0; j < initializationCount; ++j) {
-            int u    = initializations[j];
-            int dim  = u & DIM;
+            int u = initializations[j];
+            int dim = u & DIM;
             int kind = u & KIND;
             if (kind == LOCAL) {
                 u = dim + inputLocals[u & VALUE];
@@ -1355,7 +1355,7 @@ class Frame {
      */
     final boolean merge(final org.jackframework.common.asm.ClassWriter cw, final Frame frame, final int edge) {
         boolean changed = false;
-        int     i, s, dim, kind, t;
+        int i, s, dim, kind, t;
 
         int nLocal = inputLocals.length;
         int nStack = inputStack.length;

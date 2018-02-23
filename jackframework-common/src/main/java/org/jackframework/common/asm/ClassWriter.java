@@ -7,13 +7,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -542,7 +542,7 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
      * Computes the instruction types of JVM opcodes.
      */
     static {
-        int    i;
+        int i;
         byte[] b = new byte[221];
         String s = "AAAAAAAAAAAAAAAABCLMMDDDDDEEEEEEEEEEEEEEEEEEEEAAAAAAAADD"
                 + "DDDEEEEEEEEEEEEEEEEEEEEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -716,7 +716,7 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
         }
         if (debug != null) {
             sourceDebug = new org.jackframework.common.asm.ByteVector().encodeUTF8(debug, 0,
-                    Integer.MAX_VALUE);
+                                                                                   Integer.MAX_VALUE);
         }
     }
 
@@ -724,8 +724,8 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
     public final ModuleVisitor visitModule(final String name,
                                            final int access, final String version) {
         return moduleWriter = new ModuleWriter(this,
-                newModule(name), access,
-                version == null ? 0 : newUTF8(version));
+                                               newModule(name), access,
+                                               version == null ? 0 : newUTF8(version));
     }
 
     @Override
@@ -763,7 +763,7 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
         // write type, and reserve space for values count
         bv.putShort(newUTF8(desc)).putShort(0);
         org.jackframework.common.asm.AnnotationWriter aw = new org.jackframework.common.asm.AnnotationWriter(this, true, bv, bv,
-                bv.length - 2);
+                                                                                                             bv.length - 2);
         if (visible) {
             aw.next = tanns;
             tanns = aw;
@@ -821,7 +821,7 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
     public final MethodVisitor visitMethod(final int access, final String name,
                                            final String desc, final String signature, final String[] exceptions) {
         return new MethodWriter(this, access, name, desc, signature,
-                exceptions, compute);
+                                exceptions, compute);
     }
 
     @Override
@@ -842,16 +842,16 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
             throw new RuntimeException("Class file too large!");
         }
         // computes the real size of the bytecode of this class
-        int         size     = 24 + 2 * interfaceCount;
-        int         nbFields = 0;
-        FieldWriter fb       = firstField;
+        int size = 24 + 2 * interfaceCount;
+        int nbFields = 0;
+        FieldWriter fb = firstField;
         while (fb != null) {
             ++nbFields;
             size += fb.getSize();
             fb = (FieldWriter) fb.fv;
         }
-        int          nbMethods = 0;
-        MethodWriter mb        = firstMethod;
+        int nbMethods = 0;
+        MethodWriter mb = firstMethod;
         while (mb != null) {
             ++nbMethods;
             size += mb.getSize();
@@ -1036,8 +1036,8 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
                     hasFrames ? MethodWriter.INSERTED_FRAMES : MethodWriter.NOTHING;
             hasAsmInsns = false;
             new org.jackframework.common.asm.ClassReader(out.data).accept(this,
-                    (hasFrames ? org.jackframework.common.asm.ClassReader.EXPAND_FRAMES : 0)
-                            | ClassReader.EXPAND_ASM_INSNS);
+                                                                          (hasFrames ? org.jackframework.common.asm.ClassReader.EXPAND_FRAMES : 0)
+                                                                                  | ClassReader.EXPAND_ASM_INSNS);
             return toByteArray();
         }
         return out.data;
@@ -1086,7 +1086,7 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
             return newStringishItem(STR, (String) cst);
         } else if (cst instanceof Type) {
             Type t = (Type) cst;
-            int  s = t.getSort();
+            int s = t.getSort();
             if (s == Type.OBJECT) {
                 return newStringishItem(CLASS, t.getInternalName());
             } else if (s == Type.METHOD) {
@@ -1241,8 +1241,8 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
                 put112(HANDLE, tag, newField(owner, name, desc));
             } else {
                 put112(HANDLE,
-                        tag,
-                        newMethod(owner, name, desc, itf));
+                       tag,
+                       newMethod(owner, name, desc, itf));
             }
             result = new Item(index++, key4);
             put(result);
@@ -1326,7 +1326,7 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
 
         int hashCode = bsm.hashCode();
         bootstrapMethods.putShort(newHandle(bsm.tag, bsm.owner, bsm.name,
-                bsm.desc, bsm.isInterface()));
+                                            bsm.desc, bsm.isInterface()));
 
         int argsLength = bsmArgs.length;
         bootstrapMethods.putShort(argsLength);
@@ -1337,8 +1337,8 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
             bootstrapMethods.putShort(newConst(bsmArg));
         }
 
-        byte[] data   = bootstrapMethods.data;
-        int    length = (1 + 1 + argsLength) << 1; // (bsm + argCount + arguments)
+        byte[] data = bootstrapMethods.data;
+        int length = (1 + 1 + argsLength) << 1; // (bsm + argCount + arguments)
         hashCode &= 0x7FFFFFFF;
         Item result = items[hashCode % items.length];
         loop:
@@ -1683,7 +1683,7 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
      * classes.
      */
     protected String getCommonSuperClass(final String type1, final String type2) {
-        Class<?>    c, d;
+        Class<?> c, d;
         ClassLoader classLoader = getClass().getClassLoader();
         try {
             c = Class.forName(type1.replace('/', '.'), false, classLoader);
@@ -1731,14 +1731,14 @@ public class ClassWriter extends org.jackframework.common.asm.ClassVisitor {
      */
     private void put(final Item i) {
         if (index + typeCount > threshold) {
-            int    ll       = items.length;
-            int    nl       = ll * 2 + 1;
+            int ll = items.length;
+            int nl = ll * 2 + 1;
             Item[] newItems = new Item[nl];
             for (int l = ll - 1; l >= 0; --l) {
                 Item j = items[l];
                 while (j != null) {
-                    int  index = j.hashCode % newItems.length;
-                    Item k     = j.next;
+                    int index = j.hashCode % newItems.length;
+                    Item k = j.next;
                     j.next = newItems[index];
                     newItems[index] = j;
                     j = k;

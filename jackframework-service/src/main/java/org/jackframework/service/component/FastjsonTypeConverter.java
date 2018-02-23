@@ -59,7 +59,7 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
     @Override
     public void resolveResult(HttpProcessContext processContext, Object result) throws Exception {
         HttpServletResponse response = processContext.getResponse();
-        PrintWriter         writer   = response.getWriter();
+        PrintWriter writer = response.getWriter();
         try {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json;charset=utf-8");

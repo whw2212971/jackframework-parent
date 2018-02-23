@@ -7,13 +7,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -158,8 +158,8 @@ public class Attribute {
      * @return the length of the attribute list that begins with this attribute.
      */
     final int getCount() {
-        int       count = 0;
-        Attribute attr  = this;
+        int count = 0;
+        Attribute attr = this;
         while (attr != null) {
             count += 1;
             attr = attr.next;
@@ -190,7 +190,7 @@ public class Attribute {
     final int getSize(final ClassWriter cw, final byte[] code, final int len,
                       final int maxStack, final int maxLocals) {
         Attribute attr = this;
-        int       size = 0;
+        int size = 0;
         while (attr != null) {
             cw.newUTF8(attr.type);
             size += attr.write(cw, code, len, maxStack, maxLocals).length + 6;

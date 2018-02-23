@@ -8,7 +8,6 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.*;
-import java.sql.Date;
 import java.util.*;
 
 public class JdbcUtils {
@@ -159,10 +158,10 @@ public class JdbcUtils {
     }
 
     public static <T> T executeQuery(QueryContext<T> queryContext) {
-        Connection        connection = null;
-        PreparedStatement statement  = null;
-        ResultSet         resultSet  = null;
-        DataSource        dataSource = queryContext.getDataSource();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        DataSource dataSource = queryContext.getDataSource();
         try {
             // Create database connection
             connection = dataSource.getConnection();
@@ -189,8 +188,8 @@ public class JdbcUtils {
     }
 
     public static int executeUpdate(UpdateContext updateContext) {
-        Connection        connection = null;
-        PreparedStatement statement  = null;
+        Connection connection = null;
+        PreparedStatement statement = null;
         try {
             // Create database connection
             connection = updateContext.getDataSource().getConnection();
@@ -237,7 +236,7 @@ public class JdbcUtils {
     }
 
     protected static boolean startWithWhere(String whereClause) {
-        int index  = 0;
+        int index = 0;
         int length = whereClause.length();
         while (index < length) {
             if (whereClause.charAt(index) <= ' ') {

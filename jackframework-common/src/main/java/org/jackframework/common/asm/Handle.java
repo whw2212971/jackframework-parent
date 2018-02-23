@@ -87,7 +87,7 @@ public final class Handle {
      * @param desc  the descriptor of the field or method designated by this
      *              handle.
      * @deprecated this constructor has been superseded
-     * by {@link #Handle(int, String, String, String, boolean)}.
+     *         by {@link #Handle(int, String, String, String, boolean)}.
      */
     @Deprecated
     public Handle(int tag, String owner, String name, String desc) {
@@ -124,11 +124,11 @@ public final class Handle {
      * Returns the kind of field or method designated by this handle.
      *
      * @return {@link Opcodes#H_GETFIELD}, {@link Opcodes#H_GETSTATIC},
-     * {@link Opcodes#H_PUTFIELD}, {@link Opcodes#H_PUTSTATIC},
-     * {@link Opcodes#H_INVOKEVIRTUAL}, {@link Opcodes#H_INVOKESTATIC},
-     * {@link Opcodes#H_INVOKESPECIAL},
-     * {@link Opcodes#H_NEWINVOKESPECIAL} or
-     * {@link Opcodes#H_INVOKEINTERFACE}.
+     *         {@link Opcodes#H_PUTFIELD}, {@link Opcodes#H_PUTSTATIC},
+     *         {@link Opcodes#H_INVOKEVIRTUAL}, {@link Opcodes#H_INVOKESTATIC},
+     *         {@link Opcodes#H_INVOKESPECIAL},
+     *         {@link Opcodes#H_NEWINVOKESPECIAL} or
+     *         {@link Opcodes#H_INVOKEINTERFACE}.
      */
     public int getTag() {
         return tag;
@@ -139,7 +139,7 @@ public final class Handle {
      * designated by this handle.
      *
      * @return the internal name of the class that owns the field or method
-     * designated by this handle.
+     *         designated by this handle.
      */
     public String getOwner() {
         return owner;
@@ -168,7 +168,7 @@ public final class Handle {
      * by this handle is an interface.
      *
      * @return true if the owner of the field or method designated
-     * by this handle is an interface.
+     *         by this handle is an interface.
      */
     public boolean isInterface() {
         return itf;

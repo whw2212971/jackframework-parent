@@ -102,14 +102,14 @@ public abstract class FastField {
             };
         }
 
-        ClassWriter cw             = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        String      className      = FAST_FIELD_PREFIX + CaptainTools.nextIncrement();
-        String      superClassName = Type.getInternalName(FastField.class);
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        String className = FAST_FIELD_PREFIX + CaptainTools.nextIncrement();
+        String superClassName = Type.getInternalName(FastField.class);
 
         cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, superClassName, null);
 
-        String        constructorDesc = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Field.class));
-        MethodVisitor mv              = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", constructorDesc, null, null);
+        String constructorDesc = Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Field.class));
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", constructorDesc, null, null);
 
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitVarInsn(Opcodes.ALOAD, 1);
@@ -121,9 +121,9 @@ public abstract class FastField {
 
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "get", Type.getMethodDescriptor(objectType, objectType), null, null);
 
-        String   fieldClassName = Type.getInternalName(field.getDeclaringClass());
-        Class<?> fieldType      = field.getType();
-        int      modifiers      = field.getModifiers();
+        String fieldClassName = Type.getInternalName(field.getDeclaringClass());
+        Class<?> fieldType = field.getType();
+        int modifiers = field.getModifiers();
 
         boolean isStatic = Modifier.isStatic(modifiers);
 
@@ -132,23 +132,23 @@ public abstract class FastField {
             mv.visitTypeInsn(Opcodes.CHECKCAST, fieldClassName);
         }
 
-        String fieldName     = field.getName();
+        String fieldName = field.getName();
         String fieldTypeDesc = Type.getDescriptor(fieldType);
 
         mv.visitFieldInsn(isStatic ? Opcodes.GETSTATIC : Opcodes.GETFIELD, fieldClassName, fieldName, fieldTypeDesc);
 
         if (fieldType.isPrimitive()) {
             Class<?> packingClass = CaptainTools.getPackingClass(fieldType);
-            Method   packMethod   = CaptainTools.getPackingMethod(fieldType);
+            Method packMethod = CaptainTools.getPackingMethod(fieldType);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(packingClass),
-                    packMethod.getName(), Type.getMethodDescriptor(packMethod), false);
+                               packMethod.getName(), Type.getMethodDescriptor(packMethod), false);
         }
 
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitEnd();
 
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "set",
-                Type.getMethodDescriptor(Type.VOID_TYPE, objectType, objectType), null, null);
+                            Type.getMethodDescriptor(Type.VOID_TYPE, objectType, objectType), null, null);
 
         if (Modifier.isFinal(modifiers)) {
             mv.visitInsn(Opcodes.RETURN);
@@ -165,13 +165,13 @@ public abstract class FastField {
 
             if (fieldType.isPrimitive()) {
                 Class<?> packingClass = CaptainTools.getPackingClass(fieldType);
-                Method   unpackMethod = CaptainTools.getUnpackingMethod(fieldType);
+                Method unpackMethod = CaptainTools.getUnpackingMethod(fieldType);
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, Type.getInternalName(packingClass),
-                        unpackMethod.getName(), Type.getMethodDescriptor(unpackMethod), false);
+                                   unpackMethod.getName(), Type.getMethodDescriptor(unpackMethod), false);
             }
 
             mv.visitFieldInsn(isStatic ? Opcodes.PUTSTATIC : Opcodes.PUTFIELD,
-                    fieldClassName, fieldName, fieldTypeDesc);
+                              fieldClassName, fieldName, fieldTypeDesc);
             mv.visitInsn(Opcodes.RETURN);
             mv.visitEnd();
         }

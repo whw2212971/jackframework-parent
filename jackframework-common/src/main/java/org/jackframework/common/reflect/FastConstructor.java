@@ -112,7 +112,7 @@ public abstract class FastConstructor<T> {
 
         // public Object newInstance(Object[] args) {
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "newInstance",
-                Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(Object[].class)), null, null);
+                            Type.getMethodDescriptor(Type.getType(Object.class), Type.getType(Object[].class)), null, null);
 
         String constructorClassName = Type.getInternalName(constructor.getDeclaringClass());
 
@@ -123,7 +123,7 @@ public abstract class FastConstructor<T> {
         AsmTools.visitArguments(mv, constructor.getParameterTypes(), 1);
 
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL,
-                constructorClassName, "<init>", Type.getConstructorDescriptor(constructor), false);
+                           constructorClassName, "<init>", Type.getConstructorDescriptor(constructor), false);
 
         mv.visitInsn(Opcodes.ARETURN);
         // }

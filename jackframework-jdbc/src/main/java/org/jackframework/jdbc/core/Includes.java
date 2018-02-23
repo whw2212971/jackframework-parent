@@ -35,7 +35,7 @@ public class Includes {
     }
 
     protected static String toString(Set<String> fieldNames) {
-        CharsWriter      cbuf     = new CharsWriter();
+        CharsWriter cbuf = new CharsWriter();
         Iterator<String> iterator = fieldNames.iterator();
         if (iterator.hasNext()) {
             cbuf.write(iterator.next());

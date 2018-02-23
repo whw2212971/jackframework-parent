@@ -17,8 +17,8 @@ public class CamelUpperSnakeTranslator implements NameTranslator {
     }
 
     public static String camelToUpperSnake(String name) {
-        CharsWriter cbuf   = new CharsWriter();
-        int         length = name.length();
+        CharsWriter cbuf = new CharsWriter();
+        int length = name.length();
         if (0 < length) {
             int codePoint = name.charAt(0);
             if (codePoint <= 'Z' && codePoint >= 'A') {

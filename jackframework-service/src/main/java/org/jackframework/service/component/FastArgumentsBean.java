@@ -21,19 +21,19 @@ public abstract class FastArgumentsBean {
 
     @SuppressWarnings("unchecked")
     public static Class<? extends FastArgumentsBean> createFastArgumentsBeanClass(ServiceMethodHandler handler) {
-        Type[]   paramTypes = handler.getGenericParameterTypes();
+        Type[] paramTypes = handler.getGenericParameterTypes();
         String[] paramNames = handler.getParameterNames();
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
-        String className      = BEAN_CLASS_PREFIX + CaptainTools.nextIncrement();
+        String className = BEAN_CLASS_PREFIX + CaptainTools.nextIncrement();
         String superClassName = getInternalName(FastArgumentsBean.class);
 
         cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, superClassName, null);
 
         // public FastArgumentsBean$identifier() {
-        String        constructorDesc = getMethodDescriptor(VOID_TYPE);
-        MethodVisitor mv              = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", constructorDesc, null, null);
+        String constructorDesc = getMethodDescriptor(VOID_TYPE);
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", constructorDesc, null, null);
         // super();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, superClassName, "<init>", constructorDesc, false);
@@ -54,7 +54,7 @@ public abstract class FastArgumentsBean {
         mv.visitVarInsn(Opcodes.ASTORE, 1);
 
         for (int i = 0; i < paramCount; i++) {
-            Type   paramType = paramTypes[i];
+            Type paramType = paramTypes[i];
             String paramName = paramNames[i];
 
             if (!CaptainTools.isPublic(paramType)) {
@@ -71,7 +71,7 @@ public abstract class FastArgumentsBean {
             String fieldDesc = getDescriptor(paramClass);
 
             cw.visitField(Opcodes.ACC_PUBLIC, paramName, fieldDesc,
-                    paramType instanceof Class ? null : AsmTools.getSignature(paramType), null);
+                          paramType instanceof Class ? null : AsmTools.getSignature(paramType), null);
 
             mv.visitVarInsn(Opcodes.ALOAD, 1);
             iConst(mv, i);

@@ -19,12 +19,12 @@ public abstract class AsmTools {
             mv.visitInsn(Opcodes.AALOAD);
             Class<?> parameterType = paramTypes[i];
             if (parameterType.isPrimitive()) {
-                Class<?> packingClass     = CaptainTools.getPackingClass(parameterType);
-                Method   unpackingMethod  = CaptainTools.getUnpackingMethod(parameterType);
-                String   packingClassName = getInternalName(packingClass);
+                Class<?> packingClass = CaptainTools.getPackingClass(parameterType);
+                Method unpackingMethod = CaptainTools.getUnpackingMethod(parameterType);
+                String packingClassName = getInternalName(packingClass);
                 mv.visitTypeInsn(Opcodes.CHECKCAST, packingClassName);
                 mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
-                        packingClassName, unpackingMethod.getName(), getMethodDescriptor(unpackingMethod), false);
+                                   packingClassName, unpackingMethod.getName(), getMethodDescriptor(unpackingMethod), false);
             } else {
                 mv.visitTypeInsn(Opcodes.CHECKCAST, getInternalName(parameterType));
             }
@@ -62,7 +62,7 @@ public abstract class AsmTools {
         }
         if (type instanceof WildcardType) {
             WildcardType wildcardType = (WildcardType) type;
-            Type[]       bounds       = wildcardType.getLowerBounds();
+            Type[] bounds = wildcardType.getLowerBounds();
             if (bounds.length == 0) {
                 writeSignature(writer, wildcardType.getUpperBounds()[0], true);
                 return;
@@ -72,7 +72,7 @@ public abstract class AsmTools {
         }
         if (type instanceof GenericArrayType) {
             GenericArrayType genericArrayType = (GenericArrayType) type;
-            Type             componentType    = genericArrayType.getGenericComponentType();
+            Type componentType = genericArrayType.getGenericComponentType();
             writer.write('[');
             while (componentType instanceof GenericArrayType) {
                 writer.write('[');

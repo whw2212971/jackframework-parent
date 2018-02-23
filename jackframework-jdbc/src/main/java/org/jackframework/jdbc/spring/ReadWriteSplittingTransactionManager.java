@@ -39,10 +39,10 @@ public class ReadWriteSplittingTransactionManager implements PlatformTransaction
 
     protected void pushTransaction(TransactionDefinition transactionDefinition,
                                    TransactionStatus transactionStatus) {
-        TransactionStack      stack       = getTransactionStack();
-        Transaction           transaction = new Transaction(transactionDefinition, transactionStatus);
-        TransactionStack.Node node        = new TransactionStack.Node();
-        TransactionStack.Node last        = stack.getLast();
+        TransactionStack stack = getTransactionStack();
+        Transaction transaction = new Transaction(transactionDefinition, transactionStatus);
+        TransactionStack.Node node = new TransactionStack.Node();
+        TransactionStack.Node last = stack.getLast();
 
         node.setTransaction(transaction);
         if (last == null) {
@@ -56,14 +56,14 @@ public class ReadWriteSplittingTransactionManager implements PlatformTransaction
     }
 
     protected void removeTransaction(TransactionStatus transactionStatus) {
-        TransactionStack      stack = getTransactionStack();
-        TransactionStack.Node last  = stack.getLast();
-        TransactionStack.Node node  = last;
+        TransactionStack stack = getTransactionStack();
+        TransactionStack.Node last = stack.getLast();
+        TransactionStack.Node node = last;
         while (node != null) {
             Transaction transaction = node.getTransaction();
             if (transaction.getTransactionStatus().equals(transactionStatus)) {
                 TransactionStack.Node first = stack.getFirst();
-                TransactionStack.Node prev  = node.getPrev();
+                TransactionStack.Node prev = node.getPrev();
                 if (node == last) {
                     stack.setLast(prev);
                     if (prev == null) {

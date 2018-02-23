@@ -39,8 +39,8 @@ public class ExceptionHandleFilter implements Filter {
 
     protected void handleException(HttpServletRequest request,
                                    HttpServletResponse response, Throwable exception) throws ServiceServletException {
-        boolean     logged = false;
-        PrintWriter out    = null;
+        boolean logged = false;
+        PrintWriter out = null;
         try {
             if (exception instanceof ServiceServletException) {
                 exception = ((ServiceServletException) exception).getRealCause();
@@ -61,11 +61,11 @@ public class ExceptionHandleFilter implements Filter {
             }
 
             String contentType = request.getContentType();
-            String accept      = request.getHeader("Accept");
+            String accept = request.getHeader("Accept");
             if ((contentType != null &&
                     (contentType.contains("json") || contentType.contains("multipart/form-data"))) ||
                     (accept != null && accept.contains("json"))) {
-                int    errorCode;
+                int errorCode;
                 String errorMessage;
                 if (serviceException == null) {
                     errorCode = ServiceErrorCodes.INTERNAL_ERROR;
@@ -135,7 +135,7 @@ public class ExceptionHandleFilter implements Filter {
             }
             LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>();
             while (names.hasMoreElements()) {
-                String              name    = names.nextElement();
+                String name = names.nextElement();
                 Enumeration<String> headers = request.getHeaders(name);
                 if (headers == null) {
                     continue;
@@ -171,7 +171,7 @@ public class ExceptionHandleFilter implements Filter {
             }
             LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>();
             while (names.hasMoreElements()) {
-                String   name   = names.nextElement();
+                String name = names.nextElement();
                 String[] values = request.getParameterValues(name);
                 if (values.length == 1) {
                     result.put(name, values[0]);
@@ -197,8 +197,8 @@ public class ExceptionHandleFilter implements Filter {
 
     protected String getSessionAttributes(HttpServletRequest request) {
         try {
-            ServiceSession      session     = ServiceHolder.getSession(false);
-            HttpSession         httpSession = request.getSession(false);
+            ServiceSession session = ServiceHolder.getSession(false);
+            HttpSession httpSession = request.getSession(false);
             Enumeration<String> names;
             if (session == null) {
                 if (httpSession == null) {

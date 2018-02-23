@@ -25,12 +25,8 @@ public class DataAccessChannel {
     protected ExistsChannel existsChannel;
     protected ClassTable    classTable;
 
-    protected String deleteByIdSql;
-    protected String deleteByWherePrefix;
-
     protected String updateAllSql;
     protected String updateOptimizePrefix;
-    protected String updateByWherePrefix;
 
     protected ResultHandler uniqueResultHandler;
     protected ResultHandler listResultHandler;
@@ -41,11 +37,8 @@ public class DataAccessChannel {
         this.dataSource = config.getDataSource();
         this.insertChannel = config.getInsertChannelFactory().createInsertChannel(config, classTable);
         this.existsChannel = config.getExistsChannelFactory().createExistsChannel(config, classTable);
-        this.deleteByIdSql = buildDeleteByIdSql(classTable);
-        this.deleteByWherePrefix = buildDeleteByWherePrefix(classTable);
         this.updateAllSql = buildUpdateAllSql(classTable);
         this.updateOptimizePrefix = buildUpdateOptimizePrefix(classTable);
-        this.updateByWherePrefix = buildUpdateByWherePrefix(classTable);
         this.uniqueResultHandler = ResultHandlers.createUniqueResultHandler(dataType);
         this.listResultHandler = ResultHandlers.createListResultHandler(dataType);
     }
@@ -59,25 +52,26 @@ public class DataAccessChannel {
     }
 
     public int deleteById(Object id) {
-        return update(deleteByIdSql, Collections.singletonList(JdbcUtils.createStatementParam(id)));
+        return update(classTable.getTable().getDeleteByIdSql(),
+                      Collections.singletonList(JdbcUtils.createStatementParam(id)));
     }
 
     public int deleteByWhere(String whereClause, Object[] statementArgs) {
-        CharsWriter cbuf = new CharsWriter().append(deleteByWherePrefix);
+        CharsWriter cbuf = new CharsWriter().append(classTable.getTable().getDeleteByWherePrefix());
         JdbcUtils.buildWhereSql(cbuf, whereClause);
         return update(cbuf.closeToString(), JdbcUtils.createStatementParams(statementArgs));
     }
 
     public int updateAll(Object dataObject) {
-        ClassTable  classTable = this.classTable;
-        FieldColumn idColumn   = classTable.getFieldColumn(0);
-        Object      id         = idColumn.getValue(dataObject);
+        ClassTable classTable = this.classTable;
+        FieldColumn idColumn = classTable.getFieldColumn(0);
+        Object id = idColumn.getValue(dataObject);
         if (id == null) {
             return 0;
         }
 
-        int                  fieldCount = classTable.getFieldColumnsCount();
-        List<StatementParam> params     = new ArrayList<StatementParam>(fieldCount);
+        int fieldCount = classTable.getFieldColumnsCount();
+        List<StatementParam> params = new ArrayList<StatementParam>(fieldCount);
 
         for (int i = 1; i < fieldCount; i++) {
             params.add(createStatementParam(classTable.getFieldColumn(i), dataObject));
@@ -89,22 +83,25 @@ public class DataAccessChannel {
 
     public int updateByWhere(String updateClause, Object[] statementArgs) {
         return update(
-                new CharsWriter().append(updateByWherePrefix).append(updateClause).closeToString(),
+                new CharsWriter()
+                        .append(classTable.getTable().getUpdateByWherePrefix())
+                        .append(updateClause)
+                        .closeToString(),
                 JdbcUtils.createStatementParams(statementArgs));
     }
 
     public int updateOptimized(Object dataObject, Set<String> forceUpdateFields) {
-        ClassTable  classTable = this.classTable;
-        FieldColumn idColumn   = classTable.getFieldColumn(0);
-        Object      id         = idColumn.getValue(dataObject);
+        ClassTable classTable = this.classTable;
+        FieldColumn idColumn = classTable.getFieldColumn(0);
+        Object id = idColumn.getValue(dataObject);
         if (id == null) {
             return 0;
         }
 
-        CharsWriter          cbuf       = new CharsWriter().append(updateOptimizePrefix);
-        int                  fieldCount = classTable.getFieldColumnsCount();
-        List<StatementParam> params     = new ArrayList<StatementParam>(fieldCount);
-        boolean              isFirst    = true;
+        CharsWriter cbuf = new CharsWriter().append(updateOptimizePrefix);
+        int fieldCount = classTable.getFieldColumnsCount();
+        List<StatementParam> params = new ArrayList<StatementParam>(fieldCount);
+        boolean isFirst = true;
 
         for (int i = 1; i < fieldCount; i++) {
             FieldColumn fieldColumn = classTable.getFieldColumn(i);
@@ -166,25 +163,25 @@ public class DataAccessChannel {
     public <T> T max(String field, String whereClause, Object... statementArgs) {
         FieldColumn fieldColumn = getAndCheckColumn(field);
         return findByWhere("SELECT MAX(" + fieldColumn.getColumnName() + ")", whereClause,
-                statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.<T>getFieldHandler());
+                           statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.<T>getFieldHandler());
     }
 
     public <T> T min(String field, String whereClause, Object... statementArgs) {
         FieldColumn fieldColumn = getAndCheckColumn(field);
         return findByWhere("SELECT MIN(" + fieldColumn.getColumnName() + ")", whereClause,
-                statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.<T>getFieldHandler());
+                           statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.<T>getFieldHandler());
     }
 
     public BigDecimal avg(String field, String whereClause, Object... statementArgs) {
         FieldColumn fieldColumn = getAndCheckColumn(field);
         return findByWhere("SELECT AVG(" + fieldColumn.getColumnName() + ")", whereClause,
-                statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.DECIMAL_RESULT_HANDLER);
+                           statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.DECIMAL_RESULT_HANDLER);
     }
 
     public BigDecimal sum(String field, String whereClause, Object... statementArgs) {
         FieldColumn fieldColumn = getAndCheckColumn(field);
         return findByWhere("SELECT SUM(" + fieldColumn.getColumnName() + ")", whereClause,
-                statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.DECIMAL_RESULT_HANDLER);
+                           statementArgs, Collections.singletonList(fieldColumn), ResultHandlers.DECIMAL_RESULT_HANDLER);
     }
 
     public DataSource getDataSource() {
@@ -208,6 +205,10 @@ public class DataAccessChannel {
     }
 
     protected int update(String sql, List<StatementParam> params) {
+        return update(sql, params, dataSource);
+    }
+
+    public static int update(String sql, List<StatementParam> params, DataSource dataSource) {
         UpdateContext updateContext = new UpdateContext();
         updateContext.setSql(sql);
         updateContext.setStatementParams(params);
@@ -216,7 +217,7 @@ public class DataAccessChannel {
     }
 
     protected <T> T findById(Object id, List<FieldColumn> selectedColumns, ResultHandler<T> resultHandler) {
-        CharsWriter     cbuf         = new CharsWriter();
+        CharsWriter cbuf = new CharsWriter();
         QueryContext<T> queryContext = new QueryContext<T>();
 
         queryContext.setSelectedColumns(selectedColumns);
@@ -237,7 +238,7 @@ public class DataAccessChannel {
 
     protected <T> T findByWhere(String whereClause, Object[] statementArgs,
                                 List<FieldColumn> selectedColumns, ResultHandler<T> resultHandler) {
-        CharsWriter     cbuf         = new CharsWriter();
+        CharsWriter cbuf = new CharsWriter();
         QueryContext<T> queryContext = new QueryContext<T>();
 
         queryContext.setSelectedColumns(selectedColumns);
@@ -256,7 +257,7 @@ public class DataAccessChannel {
 
     protected <T> T findByWhere(String selectClause, String whereClause, Object[] statementArgs,
                                 List<FieldColumn> selectedColumns, ResultHandler<T> resultHandler) {
-        CharsWriter     cbuf         = new CharsWriter();
+        CharsWriter cbuf = new CharsWriter();
         QueryContext<T> queryContext = new QueryContext<T>();
 
         queryContext.setSelectedColumns(selectedColumns);
@@ -274,8 +275,8 @@ public class DataAccessChannel {
     }
 
     protected List<FieldColumn> buildSelectedColumns(Includes includes) {
-        ClassTable        classTable      = this.classTable;
-        int               length          = classTable.getFieldColumnsCount();
+        ClassTable classTable = this.classTable;
+        int length = classTable.getFieldColumnsCount();
         List<FieldColumn> selectedColumns = new ArrayList<FieldColumn>(length);
         for (int i = 0; i < length; i++) {
             FieldColumn fieldColumn = classTable.getFieldColumn(i);
@@ -290,8 +291,8 @@ public class DataAccessChannel {
     }
 
     protected List<FieldColumn> buildSelectedColumns(Excludes excludes) {
-        ClassTable        classTable      = this.classTable;
-        int               length          = classTable.getFieldColumnsCount();
+        ClassTable classTable = this.classTable;
+        int length = classTable.getFieldColumnsCount();
         List<FieldColumn> selectedColumns = new ArrayList<FieldColumn>(length);
         for (int i = 0; i < length; i++) {
             FieldColumn fieldColumn = classTable.getFieldColumn(i);
@@ -336,18 +337,6 @@ public class DataAccessChannel {
         return set.contains(fieldColumn.getColumnName()) || set.contains(fieldColumn.getFieldName());
     }
 
-    protected static String buildDeleteByIdSql(ClassTable classTable) {
-        return new CharsWriter().append("DELETE FROM ")
-                .append(classTable.getTable().getTableName())
-                .append(" WHERE ").append(classTable.getFieldColumn(0).getColumnName())
-                .append("=?").closeToString();
-    }
-
-    protected static String buildDeleteByWherePrefix(ClassTable classTable) {
-        return new CharsWriter().append("DELETE FROM ")
-                .append(classTable.getTable().getTableName()).append(' ').closeToString();
-    }
-
     protected static String buildUpdateAllSql(ClassTable classTable) {
         CharsWriter cbuf = new CharsWriter();
         cbuf.append("UPDATE ").write(classTable.getTable().getTableName());
@@ -360,11 +349,6 @@ public class DataAccessChannel {
         }
         return cbuf.append(" WHERE ")
                 .append(classTable.getTable().getColumn(0).getColumnName()).append("=?").closeToString();
-    }
-
-    protected static String buildUpdateByWherePrefix(ClassTable classTable) {
-        return new CharsWriter().append("UPDATE ")
-                .append(classTable.getTable().getTableName()).append(" ").closeToString();
     }
 
     protected static String buildUpdateOptimizePrefix(ClassTable classTable) {

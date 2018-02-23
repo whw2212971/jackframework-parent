@@ -7,13 +7,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -534,7 +534,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
         // write type, and reserve space for values count
         bv.putShort(cw.newUTF8(desc)).putShort(0);
         org.jackframework.common.asm.AnnotationWriter aw = new org.jackframework.common.asm.AnnotationWriter(cw, true, bv, bv,
-                bv.length - 2);
+                                                                                                             bv.length - 2);
         if (visible) {
             aw.next = tanns;
             tanns = aw;
@@ -604,7 +604,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
                 currentBlock.frame = new org.jackframework.common.asm.CurrentFrame();
                 currentBlock.frame.owner = currentBlock;
                 currentBlock.frame.initInputFrame(cw, access,
-                        Type.getArgumentTypes(descriptor), nLocal);
+                                                  Type.getArgumentTypes(descriptor), nLocal);
                 visitImplicitFirstFrame();
             } else {
                 if (type == Opcodes.F_NEW) {
@@ -633,7 +633,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
                 } else {
                     frame[frameIndex++] = org.jackframework.common.asm.Frame.UNINITIALIZED
                             | cw.addUninitializedType("",
-                            ((org.jackframework.common.asm.Label) local[i]).position);
+                                                      ((org.jackframework.common.asm.Label) local[i]).position);
                 }
             }
             for (int i = 0; i < nStack; ++i) {
@@ -645,7 +645,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
                 } else {
                     frame[frameIndex++] = org.jackframework.common.asm.Frame.UNINITIALIZED
                             | cw.addUninitializedType("",
-                            ((org.jackframework.common.asm.Label) stack[i]).position);
+                                                      ((org.jackframework.common.asm.Label) stack[i]).position);
                 }
             }
             endFrame();
@@ -889,8 +889,8 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
     public void visitMethodInsn(final int opcode, final String owner,
                                 final String name, final String desc, final boolean itf) {
         lastCodeOffset = code.length;
-        org.jackframework.common.asm.Item i       = cw.newMethodItem(owner, name, desc, itf);
-        int                               argSize = i.intVal;
+        org.jackframework.common.asm.Item i = cw.newMethodItem(owner, name, desc, itf);
+        int argSize = i.intVal;
         // Label currentBlock = this.currentBlock;
         if (currentBlock != null) {
             if (compute == FRAMES || compute == INSERTED_FRAMES) {
@@ -941,8 +941,8 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
     public void visitInvokeDynamicInsn(final String name, final String desc,
                                        final Handle bsm, final Object... bsmArgs) {
         lastCodeOffset = code.length;
-        org.jackframework.common.asm.Item i       = cw.newInvokeDynamicItem(name, desc, bsm, bsmArgs);
-        int                               argSize = i.intVal;
+        org.jackframework.common.asm.Item i = cw.newInvokeDynamicItem(name, desc, bsm, bsmArgs);
+        int argSize = i.intVal;
         // Label currentBlock = this.currentBlock;
         if (currentBlock != null) {
             if (compute == FRAMES || compute == INSERTED_FRAMES) {
@@ -1044,7 +1044,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
                     nextInsn.status |= org.jackframework.common.asm.Label.TARGET;
                 }
                 code.putByte(opcode <= 166 ? ((opcode + 1) ^ 1) - 1
-                        : opcode ^ 1);
+                                     : opcode ^ 1);
                 code.putShort(8); // jump offset
                 // ASM pseudo GOTO_W insn, see ClassReader. We don't use a real
                 // GOTO_W because we might need to insert a frame just after (as
@@ -1299,7 +1299,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
         // write type, and reserve space for values count
         bv.putShort(cw.newUTF8(desc)).putShort(0);
         org.jackframework.common.asm.AnnotationWriter aw = new org.jackframework.common.asm.AnnotationWriter(cw, true, bv, bv,
-                bv.length - 2);
+                                                                                                             bv.length - 2);
         if (visible) {
             aw.next = ctanns;
             ctanns = aw;
@@ -1337,7 +1337,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
         // write type, and reserve space for values count
         bv.putShort(cw.newUTF8(desc)).putShort(0);
         org.jackframework.common.asm.AnnotationWriter aw = new org.jackframework.common.asm.AnnotationWriter(cw, true, bv, bv,
-                bv.length - 2);
+                                                                                                             bv.length - 2);
         if (visible) {
             aw.next = ctanns;
             ctanns = aw;
@@ -1373,7 +1373,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
         if (compute != NOTHING) {
             // updates max locals
             char c = desc.charAt(0);
-            int  n = index + (c == 'J' || c == 'D' ? 2 : 1);
+            int n = index + (c == 'J' || c == 'D' ? 2 : 1);
             if (n > maxLocals) {
                 maxLocals = n;
             }
@@ -1401,7 +1401,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
         // write type, and reserve space for values count
         bv.putShort(cw.newUTF8(desc)).putShort(0);
         org.jackframework.common.asm.AnnotationWriter aw = new org.jackframework.common.asm.AnnotationWriter(cw, true, bv, bv,
-                bv.length - 2);
+                                                                                                             bv.length - 2);
         if (visible) {
             aw.next = ctanns;
             ctanns = aw;
@@ -1455,7 +1455,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
             // creates and visits the first (implicit) frame
             org.jackframework.common.asm.Frame f = labels.frame;
             f.initInputFrame(cw, access, Type.getArgumentTypes(descriptor),
-                    this.maxLocals);
+                             this.maxLocals);
             visitFrame(f);
 
             /*
@@ -1464,7 +1464,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
              * basic blocks, choose one, mark it as unchanged, and update its
              * successors (which can be changed in the process).
              */
-            int                                max     = 0;
+            int max = 0;
             org.jackframework.common.asm.Label changed = labels;
             while (changed != null) {
                 // removes a basic block from the list of changed basic blocks
@@ -1486,8 +1486,8 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
                 // updates the successors of the current basic block
                 org.jackframework.common.asm.Edge e = l.successors;
                 while (e != null) {
-                    org.jackframework.common.asm.Label n      = e.successor.getFirst();
-                    boolean                            change = f.merge(cw, n.frame, e.info);
+                    org.jackframework.common.asm.Label n = e.successor.getFirst();
+                    boolean change = f.merge(cw, n.frame, e.info);
                     if (change && n.next == null) {
                         // if n has changed and is not already in the 'changed'
                         // list, adds it to this list
@@ -1507,9 +1507,9 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
                 }
                 if ((l.status & org.jackframework.common.asm.Label.REACHABLE) == 0) {
                     // finds start and end of dead basic block
-                    org.jackframework.common.asm.Label k     = l.successor;
-                    int                                start = l.position;
-                    int                                end   = (k == null ? code.length : k.position) - 1;
+                    org.jackframework.common.asm.Label k = l.successor;
+                    int start = l.position;
+                    int end = (k == null ? code.length : k.position) - 1;
                     // if non empty basic block
                     if (end >= start) {
                         max = Math.max(max, 1);
@@ -1621,14 +1621,14 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
              * blocks in the block stack are the true (non relative) beginning
              * stack sizes of these blocks.
              */
-            int                                max   = 0;
+            int max = 0;
             org.jackframework.common.asm.Label stack = labels;
             while (stack != null) {
                 // pops a block from the stack
                 org.jackframework.common.asm.Label l = stack;
                 stack = stack.next;
                 // computes the true (non relative) max stack size of this block
-                int start    = l.inputStackTop;
+                int start = l.inputStackTop;
                 int blockMax = start + l.outputStackMax;
                 // updates the global max stack size
                 if (blockMax > max) {
@@ -1716,10 +1716,10 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
      * @param f the frame that must be visited.
      */
     private void visitFrame(final org.jackframework.common.asm.Frame f) {
-        int   i, t;
-        int   nTop   = 0;
-        int   nLocal = 0;
-        int   nStack = 0;
+        int i, t;
+        int nTop = 0;
+        int nLocal = 0;
+        int nStack = 0;
         int[] locals = f.inputLocals;
         int[] stacks = f.inputStack;
         // computes the number of locals (ignores TOP types that are just after
@@ -1866,7 +1866,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
      */
     private void writeFrame() {
         int clocalsSize = frame[1];
-        int cstackSize  = frame[2];
+        int cstackSize = frame[2];
         if ((cw.version & 0xFFFF) < Opcodes.V1_6) {
             stackMap.putShort(frame[0]).putShort(clocalsSize);
             writeFrameTypes(3, 3 + clocalsSize);
@@ -1875,8 +1875,8 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
             return;
         }
         int localsSize = previousFrame[1];
-        int type       = FULL_FRAME;
-        int k          = 0;
+        int type = FULL_FRAME;
+        int k = 0;
         int delta;
         if (frameCount == 0) {
             delta = frame[0];
@@ -2073,7 +2073,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
             }
             if (cattrs != null) {
                 size += cattrs.getSize(cw, code.data, code.length, maxStack,
-                        maxLocals);
+                                       maxLocals);
             }
         }
         if (exceptionCount > 0) {
@@ -2225,7 +2225,7 @@ class MethodWriter extends org.jackframework.common.asm.MethodVisitor {
             }
             if (cattrs != null) {
                 size += cattrs.getSize(cw, code.data, code.length, maxStack,
-                        maxLocals);
+                                       maxLocals);
             }
             out.putShort(cw.newUTF8("Code")).putInt(size);
             out.putShort(maxStack).putShort(maxLocals);

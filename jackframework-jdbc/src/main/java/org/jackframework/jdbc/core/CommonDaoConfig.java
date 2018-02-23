@@ -1,6 +1,9 @@
 package org.jackframework.jdbc.core;
 
-import org.jackframework.jdbc.dialect.*;
+import org.jackframework.jdbc.dialect.AutoIncrementInsertChannelFactory;
+import org.jackframework.jdbc.dialect.ExistsChannelFactory;
+import org.jackframework.jdbc.dialect.InsertChannelFactory;
+import org.jackframework.jdbc.dialect.NormalExistsChannelFactory;
 import org.jackframework.jdbc.translators.CamelLowerSnakeTranslator;
 import org.jackframework.jdbc.translators.NameTranslator;
 

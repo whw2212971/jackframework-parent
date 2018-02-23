@@ -7,13 +7,13 @@
  * modification, are permitted provided that the following conditions
  * are met:
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
  * 3. Neither the name of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -176,7 +176,7 @@ public class ByteVector {
             enlarge(8);
         }
         byte[] data = this.data;
-        int    i    = (int) (l >>> 32);
+        int i = (int) (l >>> 32);
         data[length++] = (byte) (i >>> 24);
         data[length++] = (byte) (i >>> 16);
         data[length++] = (byte) (i >>> 8);
@@ -243,8 +243,8 @@ public class ByteVector {
      * @return this byte vector.
      */
     ByteVector encodeUTF8(final String s, int i, int maxByteLength) {
-        int  charLength = s.length();
-        int  byteLength = i;
+        int charLength = s.length();
+        int byteLength = i;
         char c;
         for (int j = i; j < charLength; ++j) {
             c = s.charAt(j);
@@ -313,8 +313,8 @@ public class ByteVector {
      *             able to receive.
      */
     private void enlarge(final int size) {
-        int    length1 = 2 * data.length;
-        int    length2 = length + size;
+        int length1 = 2 * data.length;
+        int length2 = length + size;
         byte[] newData = new byte[length1 > length2 ? length1 : length2];
         System.arraycopy(data, 0, newData, 0, length);
         data = newData;

@@ -44,7 +44,7 @@ public class ServiceMethodHandlerAdapter implements HandlerAdapter, Ordered, App
             HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         try {
             ServiceMethodHandler serviceHandler = (ServiceMethodHandler) handler;
-            ServiceTypeConverter typeConverter  = converterCache.get(serviceHandler);
+            ServiceTypeConverter typeConverter = converterCache.get(serviceHandler);
             if (typeConverter == null) {
                 synchronized (this) {
                     typeConverter = converterCache.get(serviceHandler);
@@ -94,7 +94,7 @@ public class ServiceMethodHandlerAdapter implements HandlerAdapter, Ordered, App
         } else {
             typeConverterFactory = typeConverterFactories.iterator().next();
             LOGGER.warn("More than one bean of type '{}' was found, only use the first one {}.",
-                    ServiceTypeConverterFactory.class.getName(), typeConverterFactory);
+                        ServiceTypeConverterFactory.class.getName(), typeConverterFactory);
         }
     }
 

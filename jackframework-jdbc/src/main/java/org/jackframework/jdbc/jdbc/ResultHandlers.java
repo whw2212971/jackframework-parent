@@ -55,8 +55,8 @@ public class ResultHandlers {
         public T handleResult(QueryContext<T> queryContext) throws SQLException {
             ResultSet resultSet = queryContext.getResultSet();
             if (resultSet.next()) {
-                T   dataObject = constructor.newInstance();
-                int index      = 1;
+                T dataObject = constructor.newInstance();
+                int index = 1;
                 for (FieldColumn fieldColumn : queryContext.getSelectedColumns()) {
                     fieldColumn.setResultValue(resultSet, index++, dataObject);
                 }
@@ -77,12 +77,12 @@ public class ResultHandlers {
 
         @Override
         public List<T> handleResult(QueryContext<List<T>> queryContext) throws SQLException {
-            ResultSet         resultSet    = queryContext.getResultSet();
+            ResultSet resultSet = queryContext.getResultSet();
             List<FieldColumn> fieldColumns = queryContext.getSelectedColumns();
-            List<T>           result       = new ArrayList<T>();
+            List<T> result = new ArrayList<T>();
             while (resultSet.next()) {
-                T   dataObject = constructor.newInstance();
-                int index      = 1;
+                T dataObject = constructor.newInstance();
+                int index = 1;
                 for (FieldColumn fieldColumn : fieldColumns) {
                     fieldColumn.setResultValue(resultSet, index++, dataObject);
                 }
@@ -110,7 +110,7 @@ public class ResultHandlers {
         @Override
         public List<T> handleResult(QueryContext<List<T>> queryContext) throws SQLException {
             ResultSet resultSet = queryContext.getResultSet();
-            List<T>   result    = new ArrayList<T>();
+            List<T> result = new ArrayList<T>();
             while (resultSet.next()) {
                 result.add((T) queryContext.getSelectedColumns().get(0).getResultValue(resultSet, 1));
             }
@@ -164,7 +164,7 @@ public class ResultHandlers {
             ResultSet resultSet = queryContext.getResultSet();
             if (resultSet.next()) {
                 Map<String, Object> dataMap = new LinkedHashMap<String, Object>();
-                int                 index   = 1;
+                int index = 1;
                 for (FieldColumn fieldColumn : queryContext.getSelectedColumns()) {
                     dataMap.put(fieldColumn.getFieldName(), fieldColumn.getResultValue(resultSet, index++));
                 }
@@ -180,12 +180,12 @@ public class ResultHandlers {
         @Override
         public List<Map<String, Object>> handleResult(
                 QueryContext<List<Map<String, Object>>> queryContext) throws SQLException {
-            ResultSet                 resultSet    = queryContext.getResultSet();
-            List<FieldColumn>         fieldColumns = queryContext.getSelectedColumns();
-            List<Map<String, Object>> result       = new ArrayList<Map<String, Object>>();
+            ResultSet resultSet = queryContext.getResultSet();
+            List<FieldColumn> fieldColumns = queryContext.getSelectedColumns();
+            List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
             while (resultSet.next()) {
                 Map<String, Object> dataMap = new LinkedHashMap<String, Object>();
-                int                 index   = 1;
+                int index = 1;
                 for (FieldColumn fieldColumn : fieldColumns) {
                     dataMap.put(fieldColumn.getFieldName(), fieldColumn.getResultValue(resultSet, index++));
                 }

@@ -47,15 +47,15 @@ public class ServiceMethodHandler {
         this.handlerPath = handlerPath;
 
         Class<?>[] paramTypes = method.getParameterTypes();
-        int        paramCount = paramTypes.length;
+        int paramCount = paramTypes.length;
 
         this.parameterTypes = paramTypes;
         this.paramCount = paramCount;
         this.genericParameterTypes = method.getGenericParameterTypes();
         this.parameterNames = PARAMETER_DISCOVERER.getParameterNames(method);
 
-        int[] indexes       = new int[paramCount];
-        int   requiredCount = 0;
+        int[] indexes = new int[paramCount];
+        int requiredCount = 0;
         for (int i = 0; i < paramCount; i++) {
             if (paramTypes[i].isPrimitive()) {
                 indexes[requiredCount++] = i;
@@ -134,7 +134,7 @@ public class ServiceMethodHandler {
     @Override
     public String toString() {
         return CaptainTools.formatMessage("{}: {}",
-                ServiceMethodHandler.class.getSimpleName(), serviceMethod.getMethod().toGenericString());
+                                          ServiceMethodHandler.class.getSimpleName(), serviceMethod.getMethod().toGenericString());
     }
 
 }

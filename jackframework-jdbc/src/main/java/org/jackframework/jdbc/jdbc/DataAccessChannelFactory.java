@@ -25,14 +25,39 @@ public class DataAccessChannelFactory {
 
     protected CommonDaoConfig commonDaoConfig;
 
+    protected Map<String, Table> tableMap;
+
     protected Map<Class<?>, DataAccessChannel> dataAccessChannelMap;
+
+    protected Map<String, Map<Class<?>, DataAccessChannel>> tableAccessChannelMap;
 
     public DataAccessChannelFactory(CommonDaoConfig commonDaoConfig) {
         this.commonDaoConfig = commonDaoConfig;
+        this.tableMap = new ConcurrentHashMap<String, Table>(1024);
         this.dataAccessChannelMap = new ConcurrentHashMap<Class<?>, DataAccessChannel>(1024);
+        this.tableAccessChannelMap = new ConcurrentHashMap<String, Map<Class<?>, DataAccessChannel>>(1024);
     }
 
     public DataAccessChannel getDataAccessChannel(Class<?> dataType) {
+        return getDataAccessChannel(dataType, dataAccessChannelMap);
+    }
+
+    public DataAccessChannel getDataAccessChannel(Class<?> dataType, String tableName) {
+        Map<Class<?>, DataAccessChannel> dataAccessChannelMap = tableAccessChannelMap.get(tableName);
+        if (dataAccessChannelMap == null) {
+            synchronized (this) {
+                dataAccessChannelMap = tableAccessChannelMap.get(tableName);
+                if (dataAccessChannelMap == null) {
+                    tableAccessChannelMap.put(tableName,
+                                              dataAccessChannelMap = new HashMap<Class<?>, DataAccessChannel>());
+                }
+            }
+        }
+        return getDataAccessChannel(dataType, dataAccessChannelMap);
+    }
+
+    protected DataAccessChannel getDataAccessChannel(Class<?> dataType,
+                                                     Map<Class<?>, DataAccessChannel> dataAccessChannelMap) {
         DataAccessChannel dataAccessChannel = dataAccessChannelMap.get(dataType);
         if (dataAccessChannel == null) {
             synchronized (this) {
@@ -46,23 +71,38 @@ public class DataAccessChannelFactory {
     }
 
     public DataAccessChannel createDataAccessChannel(Class<?> dataType) {
-        CommonDaoConfig commonDaoConfig = this.commonDaoConfig;
-        NameTranslator  nameTranslator  = commonDaoConfig.getNameTranslator();
-        Table           table           = createTable(nameTranslator.classToTable(dataType));
-        ClassTable      classTable      = createClassTable(dataType, table);
-        return new DataAccessChannel(commonDaoConfig, classTable);
+        return createDataAccessChannel(dataType, commonDaoConfig.getNameTranslator().classToTable(dataType));
+    }
+
+    public DataAccessChannel createDataAccessChannel(Class<?> dataType, String tableName) {
+        Table table = getTable(tableName);
+        ClassTable classTable = createClassTable(dataType, table);
+        return new DataAccessChannel(this.commonDaoConfig, classTable);
+    }
+
+    public Table getTable(String tableName) {
+        Table table = tableMap.get(tableName);
+        if (table == null) {
+            synchronized (this) {
+                table = tableMap.get(tableName);
+                if (table == null) {
+                    tableMap.put(tableName, table = createTable(tableName));
+                }
+            }
+        }
+        return table;
     }
 
     public Table createTable(String tableName) {
-        Connection connection    = null;
-        ResultSet  primaryKeySet = null;
-        ResultSet  columnSet     = null;
+        Connection connection = null;
+        ResultSet primaryKeySet = null;
+        ResultSet columnSet = null;
         try {
             connection = commonDaoConfig.getDataSource().getConnection();
             DatabaseMetaData metaData = connection.getMetaData();
-            String           catalog  = connection.getCatalog();
-            List<Column>     columns  = new ArrayList<Column>();
-            Table            table    = new Table(tableName, columns);
+            String catalog = connection.getCatalog();
+            List<Column> columns = new ArrayList<Column>();
+            Table table = new Table(tableName, columns);
 
             columnSet = metaData.getColumns(catalog, null, tableName, "%");
             columns.add(null);
@@ -108,9 +148,9 @@ public class DataAccessChannelFactory {
     }
 
     public ClassTable createClassTable(Class<?> dataType, Table table) {
-        NameTranslator     nameTranslator = commonDaoConfig.getNameTranslator();
-        Map<String, Field> fieldMap       = new HashMap<String, Field>();
-        Field[]            fields         = dataType.getDeclaredFields();
+        NameTranslator nameTranslator = commonDaoConfig.getNameTranslator();
+        Map<String, Field> fieldMap = new HashMap<String, Field>();
+        Field[] fields = dataType.getDeclaredFields();
 
         for (Field field : fields) {
             fieldMap.put(nameTranslator.fieldToColumn(field), field);
@@ -134,7 +174,7 @@ public class DataAccessChannelFactory {
             throw new CommonDaoException("Could not found the setter, field: '{}'.", field.toGenericString());
         }
 
-        int               length       = table.getColumnsCount();
+        int length = table.getColumnsCount();
         List<FieldColumn> fieldColumns = new ArrayList<FieldColumn>(length);
 
         fieldColumns.add(new FieldColumn(column, field, getter, setter));

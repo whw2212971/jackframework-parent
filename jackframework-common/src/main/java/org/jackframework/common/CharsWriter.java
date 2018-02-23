@@ -149,7 +149,7 @@ public class CharsWriter extends Writer {
     }
 
     public void writeSubstring(char[] cbuf, int start, int end) {
-        int length      = end - start;
+        int length = end - start;
         int minCapacity = size + length;
         if (minCapacity > buffer.length) {
             buffer = CaptainTools.growCapacity(buffer, minCapacity);

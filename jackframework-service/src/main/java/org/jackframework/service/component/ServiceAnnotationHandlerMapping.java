@@ -19,9 +19,9 @@ public class ServiceAnnotationHandlerMapping extends AbstractUrlHandlerMapping i
     public void afterPropertiesSet() throws Exception {
         ApplicationContext context = getApplicationContext();
         for (String beanName : context.getBeanNamesForAnnotation(EndService.class)) {
-            Class<?> handlerType    = ClassUtils.getUserClass(context.getType(beanName));
-            Publish  typePublishApi = context.findAnnotationOnBean(beanName, Publish.class);
-            String   typeUrlPath    = "/";
+            Class<?> handlerType = ClassUtils.getUserClass(context.getType(beanName));
+            Publish typePublishApi = context.findAnnotationOnBean(beanName, Publish.class);
+            String typeUrlPath = "/";
             if (typePublishApi != null) {
                 typeUrlPath = getUrlPath(typePublishApi);
             }
@@ -37,7 +37,7 @@ public class ServiceAnnotationHandlerMapping extends AbstractUrlHandlerMapping i
             public void doWith(Method method) {
                 Publish methodPublishApi = AnnotationUtils.findAnnotation(method, Publish.class);
                 if (methodPublishApi != null) {
-                    String methodName   = method.getName();
+                    String methodName = method.getName();
                     Method existsMethod = existsMethods.get(methodName);
                     if (existsMethod != null &&
                             parameterTypeEquals(existsMethod.getParameterTypes(), method.getParameterTypes())) {

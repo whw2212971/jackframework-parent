@@ -85,7 +85,7 @@ public abstract class FastMethod {
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
 
-        String className      = FAST_METHOD_PREFIX + CaptainTools.nextIncrement();
+        String className = FAST_METHOD_PREFIX + CaptainTools.nextIncrement();
         String superClassName = Type.getInternalName(FastMethod.class);
 
         cw.visit(Opcodes.V1_6, Opcodes.ACC_PUBLIC, className, null, superClassName, null);
@@ -109,7 +109,7 @@ public abstract class FastMethod {
 
         // public Object invoke(Object target, Object[] args) {
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "invoke",
-                Type.getMethodDescriptor(objectType, objectType, Type.getType(Object[].class)), null, null);
+                            Type.getMethodDescriptor(objectType, objectType, Type.getType(Object[].class)), null, null);
 
         boolean isStatic = Modifier.isStatic(method.getModifiers());
 
@@ -125,17 +125,17 @@ public abstract class FastMethod {
 
         AsmTools.visitArguments(mv, method.getParameterTypes(), 2);
         mv.visitMethodInsn(isStatic ? Opcodes.INVOKESTATIC : Opcodes.INVOKEVIRTUAL,
-                methodClassName, method.getName(), Type.getMethodDescriptor(method), false);
+                           methodClassName, method.getName(), Type.getMethodDescriptor(method), false);
 
         Class<?> returnType = method.getReturnType();
 
         if (returnType.equals(Void.TYPE)) {
             mv.visitInsn(Opcodes.ACONST_NULL);
         } else if (returnType.isPrimitive()) {
-            Class<?> packingClass  = CaptainTools.getPackingClass(returnType);
-            Method   packingMethod = CaptainTools.getPackingMethod(returnType);
+            Class<?> packingClass = CaptainTools.getPackingClass(returnType);
+            Method packingMethod = CaptainTools.getPackingMethod(returnType);
             mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(packingClass),
-                    packingMethod.getName(), Type.getMethodDescriptor(packingMethod), false);
+                               packingMethod.getName(), Type.getMethodDescriptor(packingMethod), false);
         }
 
         mv.visitInsn(Opcodes.ARETURN);
