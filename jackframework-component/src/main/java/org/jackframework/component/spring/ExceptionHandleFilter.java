@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -49,7 +49,7 @@ public class ExceptionHandleFilter implements Filter {
             ServiceException serviceException = null;
             if (exception instanceof ServiceException) {
                 serviceException = (ServiceException) exception;
-                LOGGER.error("Service exception, {}", getRequestContent(request), exception);
+                LOGGER.warn("Service exception, {}", getRequestContent(request), exception);
             } else {
                 LOGGER.error("Internal server error, {}", getRequestContent(request), exception);
             }

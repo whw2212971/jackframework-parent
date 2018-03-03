@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 public interface ResultWrapper {
 

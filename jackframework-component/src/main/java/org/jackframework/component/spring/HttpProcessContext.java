@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

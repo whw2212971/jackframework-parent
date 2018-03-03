@@ -1,8 +1,9 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.springframework.core.Ordered;
 
 public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory {
 
@@ -14,8 +15,10 @@ public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory
 
     protected ResultWrapper resultWrapper;
 
+    protected int order = Ordered.LOWEST_PRECEDENCE;
+
     @Override
-    public ServiceTypeConverter createServiceTypeConverter(ServiceMethodHandler handler) {
+    public ServiceTypeConverter createServiceTypeConverter(ServiceMappingHandler handler) {
         if (parserConfig == null) {
             parserConfig = ParserConfig.getGlobalInstance();
         }
@@ -61,6 +64,15 @@ public class FastjsonTypeConverterFactory implements ServiceTypeConverterFactory
 
     public void setResultWrapper(ResultWrapper resultWrapper) {
         this.resultWrapper = resultWrapper;
+    }
+
+    @Override
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 
 }

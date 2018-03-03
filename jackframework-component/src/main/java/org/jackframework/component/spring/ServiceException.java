@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import org.jackframework.common.exceptions.RunningException;
 

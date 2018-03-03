@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.common.exceptions.WrappedException;
@@ -20,7 +20,7 @@ public class ServiceHolder {
         RequestLocal requestLocal = REQUEST_LOCAL.get();
         if (requestLocal == null) {
             if (create) {
-                throw new RunningException("Can't work without filter '{}'.", ServiceFilter.class.getName());
+                throw new RunningException("Can't work without filter '{}'.", ServiceRequestContextFilter.class.getName());
             }
             return null;
         }

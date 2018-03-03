@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
@@ -14,7 +14,7 @@ public class FastJsonHttpMessageConverter extends com.alibaba.fastjson.support.s
     @Override
     public Object read(Type type, Class<?> contextClass,
                        HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        return super.read(type, contextClass, inputMessage);
+        return readType(getType(type, contextClass), inputMessage);
     }
 
     protected Object readType(Type type, HttpInputMessage inputMessage) {

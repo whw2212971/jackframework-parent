@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import org.jackframework.common.CaptainTools;
 import org.jackframework.common.reflect.FastMethod;
@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-public class ServiceMethodHandler {
+public class ServiceMappingHandler {
 
     protected static final DefaultParameterNameDiscoverer PARAMETER_DISCOVERER = new DefaultParameterNameDiscoverer();
 
@@ -18,6 +18,8 @@ public class ServiceMethodHandler {
     protected boolean isSingleton;
 
     protected String beanName;
+
+    protected Class<?> beanType;
 
     protected Object beanObject;
 
@@ -35,11 +37,15 @@ public class ServiceMethodHandler {
 
     protected int[] requiredParameterIndexes;
 
-    public ServiceMethodHandler(
-            ApplicationContext applicationContext, String beanName, Method method, String handlerPath) {
+    protected ServiceTypeConverter typeConverter;
+
+    public ServiceMappingHandler(ApplicationContext applicationContext,
+                                 String beanName, Class<?> beanType, Method method, String handlerPath,
+                                 ServiceTypeConverterFactory typeConverterFactory) {
         this.applicationContext = applicationContext;
         this.isSingleton = applicationContext.isSingleton(beanName);
         this.beanName = beanName;
+        this.beanType = beanType;
         if (isSingleton) {
             this.beanObject = applicationContext.getBean(beanName);
         }
@@ -62,6 +68,7 @@ public class ServiceMethodHandler {
             }
         }
         this.requiredParameterIndexes = Arrays.copyOf(indexes, requiredCount);
+        this.typeConverter = typeConverterFactory.createServiceTypeConverter(this);
     }
 
     public boolean isSingleton() {
@@ -70,6 +77,10 @@ public class ServiceMethodHandler {
 
     public String getBeanName() {
         return beanName;
+    }
+
+    public Class<?> getBeanType() {
+        return beanType;
     }
 
     public Object getBeanObject() {
@@ -109,6 +120,10 @@ public class ServiceMethodHandler {
         return Arrays.copyOf(parameterNames, parameterNames.length);
     }
 
+    public ServiceTypeConverter getTypeConverter() {
+        return typeConverter;
+    }
+
     public void checkParameter(Object... args) {
         if (args == null) {
             throw new IllegalArgumentException("Arguments can not be null.");
@@ -120,10 +135,20 @@ public class ServiceMethodHandler {
         for (int index : requiredParameterIndexes) {
             if (args[index] == null) {
                 throw new IllegalStateException(CaptainTools.formatMessage(
-                        "Optional int parameter '{}' is present but cannot be translated into a null value due to being declared as a primitive type. Consider declaring it as object wrapper for the corresponding primitive type.",
+                        "Optional parameter '{}' is present but cannot be translated into " +
+                                "a null value due to being declared as a primitive type. " +
+                                "Consider declaring it as object wrapper for the corresponding primitive type.",
                         parameterNames[index]));
             }
         }
+    }
+
+    public Object[] convertArguments(HttpProcessContext processContext) throws Exception {
+        return typeConverter.convertArguments(processContext);
+    }
+
+    public void resolveResult(HttpProcessContext processContext, Object result) throws Exception {
+        typeConverter.resolveResult(processContext, result);
     }
 
     public Object invoke(Object... args) {
@@ -133,8 +158,8 @@ public class ServiceMethodHandler {
 
     @Override
     public String toString() {
-        return CaptainTools.formatMessage("{}: {}",
-                                          ServiceMethodHandler.class.getSimpleName(), serviceMethod.getMethod().toGenericString());
+        return CaptainTools.formatMessage(
+                "{}: {}", ServiceMappingHandler.class.getSimpleName(), serviceMethod.getMethod().toGenericString());
     }
 
 }

@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import org.jackframework.common.CaptainTools;
 import org.jackframework.common.asm.ClassWriter;
@@ -20,7 +20,7 @@ public abstract class FastArgumentsBean {
     public abstract Object[] getArguments();
 
     @SuppressWarnings("unchecked")
-    public static Class<? extends FastArgumentsBean> createFastArgumentsBeanClass(ServiceMethodHandler handler) {
+    public static Class<? extends FastArgumentsBean> createFastArgumentsBeanClass(ServiceMappingHandler handler) {
         Type[] paramTypes = handler.getGenericParameterTypes();
         String[] paramNames = handler.getParameterNames();
 

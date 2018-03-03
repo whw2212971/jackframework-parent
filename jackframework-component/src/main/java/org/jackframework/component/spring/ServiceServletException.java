@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import javax.servlet.ServletException;
 import java.io.PrintStream;
@@ -76,7 +76,7 @@ public class ServiceServletException extends ServletException {
     }
 
     @Override
-    public synchronized Throwable fillInStackTrace() {
+    public Throwable fillInStackTrace() {
         return this;
     }
 

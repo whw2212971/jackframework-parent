@@ -1,4 +1,4 @@
-package org.jackframework.service.annotation;
+package org.jackframework.component.spring;
 
 import java.lang.annotation.*;
 
@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface Publish {
+public @interface ServiceMapping {
 
     String value() default "";
 

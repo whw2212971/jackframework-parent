@@ -1,4 +1,4 @@
-package org.jackframework.service.component;
+package org.jackframework.component.spring;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
@@ -26,7 +26,7 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
 
     public FastjsonTypeConverter(ParserConfig parserConfig,
                                  Feature[] features, SerializerFeature[] serializerFeatures,
-                                 ServiceMethodHandler handler, ResultWrapper resultWrapper) {
+                                 ServiceMappingHandler handler, ResultWrapper resultWrapper) {
         this.parserConfig = parserConfig;
         this.features = features;
         this.serializerFeatures = serializerFeatures;
