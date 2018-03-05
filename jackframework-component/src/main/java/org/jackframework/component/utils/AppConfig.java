@@ -30,7 +30,7 @@ public class AppConfig {
 
     public static String getString(String name, String defaultValue) {
         Object value = PROPERTIES.get(name);
-        if (value == null) {
+        if (CaptainTools.isBlank(value)) {
             return defaultValue;
         }
         return value.toString();
@@ -38,39 +38,23 @@ public class AppConfig {
 
     public static String requireString(String name) {
         Object value = PROPERTIES.get(name);
+        if (CaptainTools.isBlank(value)) {
+            throw requiredPropertyNotFound(name);
+        }
+        return value.toString();
+    }
+
+    public static String getStringMayEmpty(String name, String defaultValue) {
+        Object value = PROPERTIES.get(name);
         if (value == null) {
-            throw requiredPropertyNotFound(name);
-        }
-        return value.toString();
-    }
-
-    public static String getStringNotEmpty(String name, String defaultValue) {
-        Object value = PROPERTIES.get(name);
-        if (CaptainTools.isEmpty(name)) {
             return defaultValue;
         }
         return value.toString();
     }
 
-    public static String requireStringNotEmpty(String name) {
+    public static String requireStringMayEmpty(String name) {
         Object value = PROPERTIES.get(name);
-        if (CaptainTools.isEmpty(name)) {
-            throw requiredPropertyNotFound(name);
-        }
-        return value.toString();
-    }
-
-    public static String getStringNotBlank(String name, String defaultValue) {
-        Object value = PROPERTIES.get(name);
-        if (CaptainTools.isBlank(name)) {
-            return defaultValue;
-        }
-        return value.toString();
-    }
-
-    public static String requireStringNotBlank(String name) {
-        Object value = PROPERTIES.get(name);
-        if (CaptainTools.isBlank(name)) {
+        if (value == null) {
             throw requiredPropertyNotFound(name);
         }
         return value.toString();

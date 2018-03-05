@@ -1,6 +1,6 @@
 package org.jackframework.component.mvc.javaee;
 
-import org.jackframework.component.mvc.spring.DefaultSpringMvcConfiguration;
+import org.jackframework.component.mvc.spring.DefaultWebMvcConfiguration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
@@ -25,9 +25,10 @@ public abstract class WebApplicationServletInitializer implements WebApplication
     public void onStartup(ServletContext servletContext) throws ServletException {
         // create an applicationContext
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+        applicationContext.setServletContext(servletContext);
 
         // register default configuration
-        applicationContext.register(DefaultSpringMvcConfiguration.class);
+        applicationContext.register(DefaultWebMvcConfiguration.class);
 
         // register custom configuration
         applicationContext.register(this.getClass());
