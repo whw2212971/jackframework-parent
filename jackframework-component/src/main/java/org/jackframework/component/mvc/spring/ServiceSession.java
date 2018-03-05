@@ -1,4 +1,4 @@
-package org.jackframework.component.spring;
+package org.jackframework.component.mvc.spring;
 
 import javax.servlet.http.HttpSession;
 import java.util.Enumeration;

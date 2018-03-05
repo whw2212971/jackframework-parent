@@ -1,4 +1,4 @@
-package org.jackframework.component.spring;
+package org.jackframework.component.mvc.spring;
 
 import org.jackframework.common.CaptainTools;
 import org.jackframework.common.reflect.FastMethod;
@@ -143,11 +143,11 @@ public class ServiceMappingHandler {
         }
     }
 
-    public Object[] convertArguments(HttpProcessContext processContext) throws Exception {
+    public Object[] convertArguments(ServiceProcessContext processContext) throws Exception {
         return typeConverter.convertArguments(processContext);
     }
 
-    public void resolveResult(HttpProcessContext processContext, Object result) throws Exception {
+    public void resolveResult(ServiceProcessContext processContext, Object result) throws Exception {
         typeConverter.resolveResult(processContext, result);
     }
 

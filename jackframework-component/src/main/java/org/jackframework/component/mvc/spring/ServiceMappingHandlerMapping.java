@@ -1,4 +1,4 @@
-package org.jackframework.component.spring;
+package org.jackframework.component.mvc.spring;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +54,9 @@ public class ServiceMappingHandlerMapping extends AbstractHandlerMapping impleme
     @Override
     public void afterPropertiesSet() throws Exception {
         applicationContext = getApplicationContext();
-        if (typeConverterFactory == null) {
+        if (applicationContext != null && typeConverterFactory == null) {
             Collection<ServiceTypeConverterFactory> typeConverterFactories =
-                    getApplicationContext().getBeansOfType(ServiceTypeConverterFactory.class, false, true).values();
+                    applicationContext.getBeansOfType(ServiceTypeConverterFactory.class, false, true).values();
             if (typeConverterFactories.isEmpty()) {
                 typeConverterFactory = new FastjsonTypeConverterFactory();
             } else if (typeConverterFactories.size() == 1) {
@@ -80,7 +80,7 @@ public class ServiceMappingHandlerMapping extends AbstractHandlerMapping impleme
         for (String beanName : beanNames) {
             Class<?> beanType = null;
             try {
-                beanType = getApplicationContext().getType(beanName);
+                beanType = applicationContext.getType(beanName);
             } catch (Throwable ex) {
                 // An unresolvable bean type, probably from a lazy bean - let's ignore it.
                 if (LOGGER.isDebugEnabled()) {

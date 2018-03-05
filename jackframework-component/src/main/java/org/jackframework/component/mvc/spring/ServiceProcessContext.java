@@ -1,9 +1,9 @@
-package org.jackframework.component.spring;
+package org.jackframework.component.mvc.spring;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class HttpProcessContext {
+public class ServiceProcessContext {
 
     protected HttpServletRequest request;
 

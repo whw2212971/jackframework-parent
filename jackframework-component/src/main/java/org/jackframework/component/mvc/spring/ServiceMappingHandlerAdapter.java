@@ -1,5 +1,6 @@
-package org.jackframework.component.spring;
+package org.jackframework.component.mvc.spring;
 
+import org.jackframework.component.mvc.javaee.ServiceServletException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -36,7 +37,7 @@ public class ServiceMappingHandlerAdapter implements HandlerAdapter, Ordered {
 
             checkRequest(request);
 
-            HttpProcessContext processContext = new HttpProcessContext();
+            ServiceProcessContext processContext = new ServiceProcessContext();
             processContext.setRequest(request);
             processContext.setResponse(response);
 

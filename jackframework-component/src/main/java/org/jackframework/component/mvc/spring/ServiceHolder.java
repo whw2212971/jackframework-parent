@@ -1,7 +1,8 @@
-package org.jackframework.component.spring;
+package org.jackframework.component.mvc.spring;
 
 import org.jackframework.common.exceptions.RunningException;
 import org.jackframework.common.exceptions.WrappedException;
+import org.jackframework.component.mvc.javaee.ServiceRequestContextFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

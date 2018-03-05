@@ -1,12 +1,13 @@
-package org.jackframework.component.spring;
+package org.jackframework.component.mvc.javaee;
 
+import org.jackframework.component.mvc.spring.ServiceHolder;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-public class ServiceRequestContextFilter implements Filter {
+public class ServiceRequestContextFilter extends ServiceHolder implements Filter {
 
     public static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();
 

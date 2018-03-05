@@ -1,4 +1,4 @@
-package org.jackframework.component.spring;
+package org.jackframework.component.mvc.spring;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
@@ -18,7 +18,7 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
 
     protected SerializerFeature[] serializerFeatures;
 
-    protected Class<? extends FastArgumentsBean> fastArgumentsBeanClass;
+    protected Class<? extends ServiceMappingHandlerArguments> fastArgumentsBeanClass;
 
     protected int paramCount;
 
@@ -30,13 +30,13 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
         this.parserConfig = parserConfig;
         this.features = features;
         this.serializerFeatures = serializerFeatures;
-        this.fastArgumentsBeanClass = FastArgumentsBean.createFastArgumentsBeanClass(handler);
+        this.fastArgumentsBeanClass = ServiceMappingHandlerArguments.createArgumentsBeanClass(handler);
         this.paramCount = handler.getParamCount();
         this.resultWrapper = resultWrapper;
     }
 
     @Override
-    public Object[] convertArguments(HttpProcessContext processContext) throws Exception {
+    public Object[] convertArguments(ServiceProcessContext processContext) throws Exception {
         InputStream in = null;
         try {
             in = processContext.getRequest().getInputStream();
@@ -45,7 +45,7 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
             }
             String body = CaptainTools.toString(in);
             ServiceHolder.setRequestBody(body);
-            FastArgumentsBean fastArgumentsBean =
+            ServiceMappingHandlerArguments fastArgumentsBean =
                     JSON.parseObject(body, fastArgumentsBeanClass, parserConfig, features);
             if (fastArgumentsBean == null) {
                 return new Object[paramCount];
@@ -57,7 +57,7 @@ public class FastjsonTypeConverter implements ServiceTypeConverter {
     }
 
     @Override
-    public void resolveResult(HttpProcessContext processContext, Object result) throws Exception {
+    public void resolveResult(ServiceProcessContext processContext, Object result) throws Exception {
         HttpServletResponse response = processContext.getResponse();
         PrintWriter writer = response.getWriter();
         try {
